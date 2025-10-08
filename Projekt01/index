@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { URL } from "node:url";
-import { handlePath } from "./src/path_handlers.js";
+import { handlePath } from "./Projekt01/src/Projekt01_handler";
 
 const server = createServer((req, res) => {
   const request_url = new URL(`http://${host}${req.url}`);
