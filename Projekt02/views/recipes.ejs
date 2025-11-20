@@ -1,0 +1,18 @@
+<%- include('head.ejs') %>
+<body>
+  <h1><%= title %></h1>
+  <ul id="recipes">
+    <% if (Array.isArray(recipes) && recipes.length) { %>
+      <% recipes.forEach(function(recipe){ %>
+        <li>
+          <a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a>
+          - <%= recipe.description %>
+        </li>
+      <% }) %>
+    <% } else { %>
+      <li>No recipes available.</li>
+    <% } %>
+  </ul>
+  <p><a href="/">Home</a></p>
+</body>
+</html>
