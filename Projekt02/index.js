@@ -42,7 +42,7 @@ app.get('/recipes/:id', (req, res) => {
   const found = getRecipe(id);
   if (!found) {
     return res.status(404).send('Recipe not found');
-  }
+  } // pozdrawiam serdecznie Pana Daniela ;)
 
   res.render('recipe', {
     title: found.name,
