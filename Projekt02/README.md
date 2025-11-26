@@ -1,3 +1,3 @@
 # projekt02
 
-By uruchomic projekt wystarczy wpisac 'node index.js'
+By uruchomic projekt wystarczy wpisac 'npm install' i 'node index.js'
