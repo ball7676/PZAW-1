@@ -12,6 +12,32 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use(express.urlencoded({ extended: false }));
 
+app.get('/add', (req, res) => {
+  res.render('add', { title: 'Add recipe' });
+});
+
+app.post('/add', (req, res) => {
+  const { title, ingredients, instructions } = req.body;
+
+  const newRecipe = {
+    name: (title || '').trim(),
+    description: (ingredients || '')
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .join(', '),
+    instructions: (instructions || '').trim()
+  };
+
+  const created = addRecipe(newRecipe);
+
+  if (!created) {
+    return res.redirect('/?error=1');
+  }
+
+  res.redirect('/recipes/');
+});
+
 app.get('/', (req, res) => {
   res.render('index', {
     title: 'Strona główna - Projekt02',

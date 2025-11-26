@@ -64,7 +64,6 @@ export function addRecipe(payload) {
   const name = String(payload.name).trim();
   if (!name) return null;
 
-  // prevent duplicate names (case-insensitive)
   const exists = recipes.some(r => r.name.toLowerCase() === name.toLowerCase());
   if (exists) return null;
 

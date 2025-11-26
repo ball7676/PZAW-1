@@ -1,5 +1,18 @@
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= typeof title !== 'undefined' ? title : 'Projekt02' %></title>
+  <title><%= title || 'Recipes' %></title>
+
+  <link rel="stylesheet" href="/styles.css">
 </head>
+
+<body>
+  <div class="container">
+    <header class="site-header">
+      <h1 class="site-title"><a href="/">Home page</a></h1>
+      <nav>
+        <a class="btn" href="/add">Add recipe</a>
+        <a class="btn" href="/recipes">View recipes</a>
+      </nav>
+    </header>
+  </div>

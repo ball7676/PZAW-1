@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <%- include('head', { title: title }) %>
+  <body>
+    <div class="container">
+      <header class="site-header">
+        <h1 class="site-title">Add recipe</h1>
+      </header>
+
+      <main class="recipe-content">
+        <form action="/add" method="post" style="display:flex;flex-direction:column;gap:.75rem;max-width:720px;margin:0 auto;text-align:left;">
+          <label>
+            Title
+            <input name="title" required type="text" style="width:100%;padding:.5rem;border-radius:6px;border:1px solid #ddd"/>
+          </label>
+
+          <label>
+            Ingredients (one per line)
+            <textarea name="ingredients" rows="6" style="width:100%;padding:.5rem;border-radius:6px;border:1px solid #ddd"></textarea>
+          </label>
+
+          <label>
+            Instructions
+            <textarea name="instructions" rows="8" style="width:100%;padding:.5rem;border-radius:6px;border:1px solid #ddd"></textarea>
+          </label>
+
+          <div style="display:flex;gap:.5rem;justify-content:center;margin-top:.5rem">
+            <button class="btn" type="submit">Add recipe</button>
+            <a class="btn secondary" href="/recipes">Cancel</a>
+          </div>
+        </form>
+      </main>
+
+      <%- include('footer') %>
+    </div>
+  </body>
+</html>
