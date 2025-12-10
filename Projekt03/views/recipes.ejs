@@ -1,0 +1,33 @@
+<%- include('head.ejs') %>
+<body>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <% if (!Array.isArray(recipes) || recipes.length === 0) { %>
+      <p>No recipes available.</p>
+    <% } else { %>
+      <div class="recipe-list">
+        <% recipes.forEach(function(recipe){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+            <p><%= recipe.description %></p>
+            <div class="card-buttons" style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+              <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="GET" style="display:inline;">
+                <button type="submit" class="btn" id="btn-edit">Edit</button>
+              </form>
+              <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST" style="display:inline;">
+                <button type="submit" class="btn" style="background:#dc3545; border:none;">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <nav>
+      <p><a class="btn" href="/">Home</a></p>
+      <p><a class="btn" href="/add">Add recipe</a></p>
+    </nav>
+  </div>
+</body>
+</html>

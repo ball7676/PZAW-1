@@ -1,0 +1,17 @@
+{
+  "name": "projekt02",
+  "version": "1.0.0",
+  "description": "Express server with dynamic views for Projekt 02",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "body-parser": "^1.20.2"
+  }
+}

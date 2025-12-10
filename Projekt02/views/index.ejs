@@ -1,11 +1,12 @@
 <%- include('head.ejs') %>
 <body>
-  <h1><%= title %></h1>
+  <h1>Welcome to the CookBook website!</h1>
 
   <% if (error) { %>
     <p class="error">Could not add recipe (missing or duplicate name).</p>
   <% } %>
 
+  <p style="font-size: larger;">This website lets you browse, search, and add recipes. Use the form below to submit a new recipe — include a clear title, a complete list of ingredients, step-by-step instructions, and an estimated preparation and cooking time. You can also add optional tags (e.g., "vegetarian", "quick", "dessert") and an image to help others find and reproduce your dish. Be as specific as possible with measurements and temperatures so readers can get reliable results. Once submitted, your recipe will appear on the site for others to view.</p>
   <form action="/recipes" method="post" class="add-recipe">
 </body>
 </html>
