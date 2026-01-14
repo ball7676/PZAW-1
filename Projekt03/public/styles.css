@@ -1,27 +1,114 @@
-:root{
-  --bg: #f9f7fc;
-  --card: #ffffff;
-  --muted: #5e3b8a;
-  --accent: #9b5de5;
-  --accent-weak: rgba(155,93,229,0.1);
-  --radius: 12px;
-  --delete: #e63946;
-  --edit: #f2c94c;
+:root {
+  --text: #2b0b3a;
 }
 
-* { box-sizing:border-box; }
-html, body { height:100%; }
+[data-theme="light"] {
+  --bg: #0b1220;
+  --card: #0f1724;
+  --muted: #9aa8bf;
+  --accent: #9b5de5;
+  --accent-weak: rgba(155,93,229,0.08);
+  --text: #e6eef8;
+}
 
 body {
-  margin: 0;
-  font-family: Inter, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: linear-gradient(135deg, #f9f7f0, #f2e6ff);
-  color: #2b0b3a;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  line-height: 1.5;
-  padding: 0;
-  text-align: center;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+.cookie-popup {
+  position: fixed;
+  right: 1rem;
+  bottom: 4rem;
+  width: 260px;
+  background: var(--card);
+  color: var(--text);
+  border-radius: calc(var(--radius) / 1.5);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  padding: 12px;
+  z-index: 10000;
+  transition: transform 180ms ease, opacity 180ms ease;
+  border: 1px solid var(--accent-weak);
+}
+
+[data-theme="dark"] .cookie-popup {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.cookie-popup.hidden {
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  pointer-events: none;
+}
+
+.cookie-content h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.theme-options {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.theme-btn {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-weak);
+  background: transparent;
+  cursor: pointer;
+  color: var(--text);
+}
+
+[data-theme="dark"] .theme-btn {
+  border-color: rgba(255,255,255,0.06);
+}
+
+.theme-btn.active {
+  outline: 2px solid var(--accent);
+  background: var(--accent-weak);
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cookie-actions .primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cookie-actions .secondary {
+  background: transparent;
+  border: 1px solid var(--accent-weak);
+  color: var(--accent);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.theme-open {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10001;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  cursor: pointer;
 }
 
 .container{

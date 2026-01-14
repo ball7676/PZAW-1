@@ -7,6 +7,34 @@
 </head>
 
 <body>
+
+  <script>
+(function(){
+  function getCookie(name){
+    const v = document.cookie.match('(?:^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return v ? decodeURIComponent(v[1]) : null;
+  }
+  var theme = getCookie('site_theme');
+  if (theme) document.documentElement.setAttribute('data-theme', theme);
+})();
+</script>
+
+  <div id="cookie-popup" class="cookie-popup hidden" aria-hidden="true">
+    <div class="cookie-content">
+      <h3>Choose site theme</h3>
+      <div class="theme-options">
+        <button data-theme="light" class="theme-btn">Light</button>
+        <button data-theme="dark" class="theme-btn">Dark</button>
+      </div>
+      <div class="cookie-actions">
+        <button id="cookie-save" class="primary">Save</button>
+        <button id="cookie-close" class="secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="theme-open" class="theme-open" aria-label="Open theme chooser">Theme</button>
+
   <div class="container">
     <header class="site-header">
       <h1 class="site-title"><a href="/">Home page</a></h1>
