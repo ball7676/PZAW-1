@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <%- include('head', { title: title }) %>
+  <body>
+    <div class="container">
+      <header class="site-header">
+        <h1 class="site-title">Add recipe</h1>
+      </header>
+
+      <main class="recipe-content">
+        <form action="/add" method="post" class="recipe-form">
+          <label>
+            Title
+            <input name="title" required type="text" class="form-input"/>
+          </label>
+
+          <label>
+            Description
+            <textarea name="description" rows="6" class="form-textarea"></textarea>
+          </label>
+
+          <label>
+            Instructions
+            <textarea name="instructions" rows="8" class="form-textarea"></textarea>
+          </label>
+
+          <div class="form-buttons">
+            <button class="btn" type="submit">Add recipe</button>
+            <a class="btn secondary" href="/recipes">Cancel</a>
+          </div>
+        </form>
+      </main>
+
+      <%- include('footer') %>
+    </div>
+  </body>
+</html>
