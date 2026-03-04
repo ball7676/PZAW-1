@@ -1,5 +1,6 @@
 <%- include('head.ejs') %>
-<body>
+
+<main class="cotainer">
   <h1>Witamy na stronie CookBook!</h1>
 
   <% if (error) { %>
@@ -8,5 +9,5 @@
 
   <p style="font-size: larger;">Ta strona internetowa umożliwia przeglądanie, wyszukiwanie oraz dodawanie przepisów. Skorzystaj z formularza dodającego, aby dodać nowy przepis — podaj wyraźny tytuł, instrukcje krok po kroku oraz szacowany czas przygotowania i gotowania. Bądź jak najbardziej precyzyjny/a w podawaniu ilości i temperatur, aby czytelnicy mogli uzyskać powtarzalne i niezawodne rezultaty. Po przesłaniu przepis pojawi się na stronie i będzie dostępny dla innych użytkowników.
   <form action="/recipes" method="post" class="add-recipe">
-</body>
-</html>
+
+<%- include('footer.ejs') %>

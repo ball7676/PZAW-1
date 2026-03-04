@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const DB_DIR = path.join(process.cwd(), 'database', 'data');
-const DB_FILE = path.join(DB_DIR, 'recipes.json');
+const DB_FILE = path.join(DB_DIR, './recipes.json');
 
 if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });

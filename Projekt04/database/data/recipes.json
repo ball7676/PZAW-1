@@ -5,6 +5,11 @@
     "instructions": "Ugotuj spaghetti al dente. Na patelni podsmaż boczek, aż będzie chrupiący. W misce wymieszaj jajka z tartym parmezanem i pieprzem. Gorący makaron wymieszaj z boczkiem i zdejmij z ognia. Dodaj mieszankę jajeczną i dokładnie wymieszaj, aby powstał kremowy sos."
   },
   {
+    "name": "Chicken Curry",
+    "description": "Aromatyczne curry z kurczaka w kremowym sosie kokosowym z przyprawami indyjskimi.",
+    "instructions": "Podsmaż cebulę, czosnek i imbir na oleju. Dodaj przyprawy curry i kurkumę. Wrzuć kawałki kurczaka i obsmaż ze wszystkich stron. Wlej mleko kokosowe i duś pod przykryciem ok. 20 minut, aż sos zgęstnieje."
+  },
+  {
     "name": "Beef Stroganoff",
     "description": "Rosyjskie danie z delikatnej wołowiny w sosie śmietanowo-grzybowym.",
     "instructions": "Pokrój wołowinę w cienkie paski i podsmaż na patelni. Dodaj cebulę i pieczarki, smaż do zarumienienia. Wlej bulion, dodaj musztardę i śmietanę, a następnie gotuj na małym ogniu przez kilka minut, aż sos się zagęści."
@@ -33,10 +38,5 @@
     "name": "Caesar Salad",
     "description": "Klasyczna sałatka z chrupiącą sałatą rzymską, grzankami, parmezanem i sosem Cezar.",
     "instructions": "Przygotuj sos z majonezu, musztardy, czosnku, anchois, cytryny i parmezanu. Pokrój sałatę, dodaj grzanki i starty ser. Polej sosem i wymieszaj tuż przed podaniem."
-  },
-  {
-    "name": "Chicken Curry",
-    "description": "Aromatyczne curry z kurczaka w kremowym sosie kokosowym z przyprawami indyjskimi.",
-    "instructions": "Podsmaż cebulę, czosnek i imbir na oleju. Dodaj przyprawy curry i kurkumę. Wrzuć kawałki kurczaka i obsmaż ze wszystkich stron. Wlej mleko kokosowe i duś pod przykryciem ok. 20 minut, aż sos zgęstnieje."
   }
 ]

@@ -1,3 +1,15 @@
+:root{
+  --bg: #ffffff;
+  --card: #ffffff;
+  --muted: #6b21a8;
+  --accent: #7c3aed;
+  --accent-weak: rgba(124,58,237,0.08);
+  --radius: 10px;
+  --text: #2b0b3a;
+  --edit: #e0b93c;
+  --delete: #dc3545;
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
@@ -24,6 +36,26 @@ header.site-header{
   justify-content:center;
   width:100%;
   max-width:980px;
+}
+
+.container{
+  margin: 0 auto;
+  max-width: 900px;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.container h1,
+h1 {
+  text-align: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  text-align: center;
+  margin: 0.5rem 0;
 }
 
 .card{
