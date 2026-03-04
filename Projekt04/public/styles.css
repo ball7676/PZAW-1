@@ -10,18 +10,6 @@
   --delete: #dc3545;
 }
 
-:root{
-  --bg: #f7f6fb;
-  --card: #ffffff;
-  --muted: #6b21a8;
-  --accent: #7c3aed;
-  --accent-weak: rgba(124,58,237,0.08);
-  --radius: 10px;
-  --text: #2b0b3a;
-  --edit: #e0b93c;
-  --delete: #dc3545;
-}
-
 body{
   margin: 0;
   min-height: 100vh;
@@ -35,7 +23,7 @@ body{
   max-width: 900px;
   padding: 1.5rem;
   box-sizing: border-box;
-  margin: 0 auto; /* poziome wyśrodkowanie */
+  margin: 0 auto;
 }
 
 .container h1,
