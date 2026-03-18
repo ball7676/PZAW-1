@@ -1,13 +1,33 @@
 <%- include('head.ejs') %>
+<body>
+  <div class="container">
+    <main class="home-content">
+      <section class="hero">
+        <h1 class="hero-title">Welcome to <span>CookBook</span></h1>
+        <p class="hero-subtitle">Discover and share delicious recipes from around the world</p>
+        <div class="hero-buttons">
+          <a class="btn" href="/recipes">Browse Recipes</a>
+          <a class="btn secondary" href="/add">Add Recipe</a>
+        </div>
+      </section>
 
-<main class="cotainer">
-  <h1>Witamy na stronie CookBook!</h1>
-
-  <% if (error) { %>
-    <p class="error">Nie udało się dodać przepisu (brakująca lub zduplikowana nazwa).</p>
-  <% } %>
-
-  <p style="font-size: larger;">Ta strona internetowa umożliwia przeglądanie, wyszukiwanie oraz dodawanie przepisów. Skorzystaj z formularza dodającego, aby dodać nowy przepis — podaj wyraźny tytuł, instrukcje krok po kroku oraz szacowany czas przygotowania i gotowania. Bądź jak najbardziej precyzyjny/a w podawaniu ilości i temperatur, aby czytelnicy mogli uzyskać powtarzalne i niezawodne rezultaty. Po przesłaniu przepis pojawi się na stronie i będzie dostępny dla innych użytkowników.
-  <form action="/recipes" method="post" class="add-recipe">
-
-<%- include('footer.ejs') %>
+      <section class="features">
+        <div class="feature-card">
+          <div class="feature-icon">📖</div>
+          <h3>Explore</h3>
+          <p>Browse our collection of curated recipes from various cuisines</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✏️</div>
+          <h3>Create</h3>
+          <p>Add your own recipes and share your culinary creations</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">❤️</div>
+          <h3>Save</h3>
+          <p>Keep your favorite recipes organized in one place</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>

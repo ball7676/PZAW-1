@@ -22,10 +22,6 @@
 
 
   function init(){
-    if (!document.getElementById('cookie-popup')) {
-      document.body.appendChild(injected);
-    }
-
     var popup = document.getElementById('cookie-popup');
     var openBtn = document.getElementById('theme-open');
     var saveBtn = document.getElementById('cookie-save');

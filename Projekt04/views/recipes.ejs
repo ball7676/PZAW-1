@@ -11,12 +11,12 @@
           <div class="card">
             <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
             <p><%= recipe.description %></p>
-            <div class="card-buttons" style="display:flex; gap:0.5rem; margin-top:0.5rem;">
-              <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="GET" style="display:inline;">
-                <button type="submit" class="btn" id="btn-edit">Edit</button>
+            <div class="card-buttons">
+              <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="GET">
+                <button type="submit" class="btn btn-edit">Edit</button>
               </form>
-              <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST" style="display:inline;">
-                <button type="submit" class="btn" style="background:#dc3545; border:none;">Delete</button>
+              <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
+                <button type="submit" class="btn delete">Delete</button>
               </form>
             </div>
           </div>
@@ -24,10 +24,10 @@
       </div>
     <% } %>
 
-    <nav>
-      <p><a class="btn" href="/">Home</a></p>
-      <p><a class="btn" href="/add">Add recipe</a></p>
-    </nav>
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/">Home</a>
+      <a class="btn secondary" href="/add">Add Recipe</a>
+    </div>
   </div>
 </body>
 </html>

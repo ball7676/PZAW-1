@@ -1,126 +1,128 @@
-import fs from 'fs';
+import Database from 'better-sqlite3';
 import path from 'path';
 
-const recipes = [
-  {
-    name: "Spaghetti Carbonara",
-    description: "Klasyczne włoskie danie z makaronu spaghetti z sosem na bazie jajek, parmezanu, boczku i pieprzu.",
-    instructions: "Ugotuj spaghetti al dente. Na patelni podsmaż boczek, aż będzie chrupiący. W misce wymieszaj jajka z tartym parmezanem i pieprzem. Gorący makaron wymieszaj z boczkiem i zdejmij z ognia. Dodaj mieszankę jajeczną i dokładnie wymieszaj, aby powstał kremowy sos."
-  },
-  {
-    name: "Chicken Curry",
-    description: "Aromatyczne curry z kurczaka w kremowym sosie kokosowym z przyprawami indyjskimi.",
-    instructions: "Podsmaż cebulę, czosnek i imbir na oleju. Dodaj przyprawy curry i kurkumę. Wrzuć kawałki kurczaka i obsmaż ze wszystkich stron. Wlej mleko kokosowe i duś pod przykryciem ok. 20 minut, aż sos zgęstnieje."
-  },
-  {
-    name: "Beef Stroganoff",
-    description: "Rosyjskie danie z delikatnej wołowiny w sosie śmietanowo-grzybowym.",
-    instructions: "Pokrój wołowinę w cienkie paski i podsmaż na patelni. Dodaj cebulę i pieczarki, smaż do zarumienienia. Wlej bulion, dodaj musztardę i śmietanę, a następnie gotuj na małym ogniu przez kilka minut, aż sos się zagęści."
-  },
-  {
-    name: "Pad Thai",
-    description: "Tradycyjne tajskie danie z makaronu ryżowego smażonego z jajkiem, tofu, krewetkami i sosem tamaryndowym.",
-    instructions: "Namocz makaron ryżowy w ciepłej wodzie. Na patelni podsmaż czosnek, tofu i krewetki. Dodaj makaron, wbij jajko i mieszaj. Wlej sos tamaryndowy, sos rybny i odrobinę cukru. Podawaj z orzeszkami ziemnymi i limonką."
-  },
-  {
-    name: "Vegetable Stir Fry",
-    description: "Kolorowy stir-fry z warzyw smażonych w sosie sojowym i sezamowym.",
-    instructions: "Pokrój warzywa (paprykę, brokuły, marchewkę, cukinię). Rozgrzej wok i smaż warzywa na dużym ogniu przez kilka minut. Dodaj sos sojowy, czosnek i odrobinę oleju sezamowego. Podawaj z ryżem lub makaronem."
-  },
-  {
-    name: "Fish Tacos",
-    description: "Meksykańskie tacos z chrupiącą rybą, świeżymi warzywami i kremowym sosem.",
-    instructions: "Pokrój filety rybne, obtocz w przyprawionej panierce i usmaż. W podgrzanych tortillach ułóż rybę, dodaj kapustę, pomidora i sos jogurtowo-limonkowy. Zwiń tacos i podawaj od razu."
-  },
-  {
-    name: "Lentil Soup",
-    description: "Pożywna zupa z czerwonej soczewicy z warzywami i przyprawami.",
-    instructions: "Podsmaż cebulę, czosnek i marchewkę. Dodaj soczewicę, pomidory z puszki i bulion warzywny. Gotuj ok. 25 minut, aż soczewica zmięknie. Dopraw kuminem, papryką i solą."
-  },
-  {
-    name: "Caesar Salad",
-    description: "Klasyczna sałatka z chrupiącą sałatą rzymską, grzankami, parmezanem i sosem Cezar.",
-    instructions: "Przygotuj sos z majonezu, musztardy, czosnku, anchois, cytryny i parmezanu. Pokrój sałatę, dodaj grzanki i starty ser. Polej sosem i wymieszaj tuż przed podaniem."
+const DB_PATH = path.join(process.cwd(), 'database', 'recipes.db');
+const db = new Database(DB_PATH);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS recipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    instructions TEXT
+  )
+`);
+
+const existingCount = db.prepare('SELECT COUNT(*) as count FROM recipes').get();
+if (existingCount.count === 0) {
+  const seedRecipes = [
+    {
+      name: "Spaghetti Carbonara",
+      description: "Classic Italian pasta dish with spaghetti in a sauce made from eggs, parmesan, bacon, and pepper.",
+      instructions: "Cook spaghetti until al dente. On a pan, fry the bacon until crispy. In a bowl, mix eggs with grated parmesan and pepper. Toss the hot pasta with the bacon and remove from heat. Add the egg mixture and mix thoroughly to create a creamy sauce."
+    },
+    {
+      name: "Chicken Curry",
+      description: "Aromatic chicken curry in a creamy coconut sauce with Indian spices.",
+      instructions: "Sauté onion, garlic, and ginger in oil. Add curry powder and turmeric. Add chicken pieces and brown on all sides. Pour in coconut milk and simmer covered for about 20 minutes until the sauce thickens."
+    },
+    {
+      name: "Beef Stroganoff",
+      description: "Russian dish with tender beef in a creamy mushroom sauce.",
+      instructions: "Cut beef into thin strips and sauté in a pan. Add onion and mushrooms, fry until golden. Pour in broth, add mustard and cream, then simmer on low heat for a few minutes until the sauce thickens."
+    },
+    {
+      name: "Pad Thai",
+      description: "Traditional Thai dish with rice noodles fried with egg, tofu, shrimp, and tamarind sauce.",
+      instructions: "Soak rice noodles in warm water. On a pan, sauté garlic, tofu, and shrimp. Add noodles, crack in egg and stir. Pour in tamarind sauce, fish sauce, and a bit of sugar. Serve with peanuts and lime."
+    },
+    {
+      name: "Vegetable Stir Fry",
+      description: "Colorful stir-fry with vegetables cooked in soy and sesame sauce.",
+      instructions: "Cut vegetables (bell pepper, broccoli, carrots, zucchini). Heat a wok and fry vegetables on high heat for a few minutes. Add soy sauce, garlic, and a bit of sesame oil. Serve with rice or noodles."
+    },
+    {
+      name: "Fish Tacos",
+      description: "Mexican tacos with crispy fish, fresh vegetables, and creamy sauce.",
+      instructions: "Cut fish fillets, coat in seasoned breadcrumbs and fry. In warmed tortillas, place fish, add cabbage, tomato, and yogurt-lime sauce. Roll up tacos and serve immediately."
+    },
+    {
+      name: "Lentil Soup",
+      description: "Nutritious red lentil soup with vegetables and spices.",
+      instructions: "Sauté onion, garlic, and carrots. Add lentils, canned tomatoes, and vegetable broth. Cook for about 25 minutes until lentils soften. Season with cumin, paprika, and salt."
+    },
+    {
+      name: "Caesar Salad",
+      description: "Classic salad with crispy romaine lettuce, croutons, parmesan, and Caesar dressing.",
+      instructions: "Prepare dressing with mayonnaise, mustard, garlic, anchovies, lemon, and parmesan. Chop lettuce, add croutons and grated cheese. Drizzle with dressing and toss just before serving."
+    }
+  ];
+
+  const insert = db.prepare('INSERT INTO recipes (name, description, instructions) VALUES (?, ?, ?)');
+  for (const recipe of seedRecipes) {
+    insert.run(recipe.name, recipe.description, recipe.instructions);
   }
-];
-
-
-const DB_DIR = path.join(process.cwd(), 'database', 'data');
-const DB_FILE = path.join(DB_DIR, 'recipes.json');
-
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
-}
-
-function loadRecipes() {
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(recipes, null, 2));
-    return recipes;
-  }
-
-  const raw = fs.readFileSync(DB_FILE, 'utf8');
-  const data = JSON.parse(raw);
-
-  if (Array.isArray(data) && data.length > 0) {
-    return data;
-  }
-
-  fs.writeFileSync(DB_FILE, JSON.stringify(recipes, null, 2));
-  return recipes;
-}
-
-function saveRecipes(data) {
-  const tmp = DB_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
-  fs.renameSync(tmp, DB_FILE);
 }
 
 export function getAllRecipes() {
-  return loadRecipes().map(r => ({
-    id: r.name,
-    name: r.name,
-    description: r.description
-  }));
+  const rows = db.prepare('SELECT id, name, description FROM recipes ORDER BY id').all();
+  return rows;
 }
 
 export function getRecipe(idOrName) {
-  const target = String(idOrName).toLowerCase();
-  return loadRecipes().find(
-    r => r.name.toLowerCase() === target
-  ) || null;
+  let row;
+  if (/^\d+$/.test(String(idOrName))) {
+    row = db.prepare('SELECT * FROM recipes WHERE id = ?').get(idOrName);
+  } else {
+    row = db.prepare('SELECT * FROM recipes WHERE LOWER(name) = LOWER(?)').get(String(idOrName));
+  }
+  return row || null;
 }
 
 export function addRecipe(payload) {
-  const data = loadRecipes();
   const name = payload?.name?.trim();
   if (!name || !payload.description) return null;
 
-  if (data.some(r => r.name.toLowerCase() === name.toLowerCase())) {
-    return null;
+  try {
+    const result = db.prepare('INSERT INTO recipes (name, description, instructions) VALUES (?, ?, ?)').run(
+      name,
+      payload.description,
+      payload.instructions || ''
+    );
+    return { id: result.lastInsertRowid, name, description: payload.description, instructions: payload.instructions || '' };
+  } catch (err) {
+    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') return null;
+    throw err;
   }
+}
 
-  const newRecipe = {
-    name,
-    description: payload.description,
-    instructions: payload.instructions || ''
-  };
+export function updateRecipe(idOrName, payload) {
+  const existing = getRecipe(idOrName);
+  if (!existing) return false;
 
-  data.push(newRecipe);
-  saveRecipes(data);
-  return newRecipe;
+  const name = payload.name?.trim() || existing.name;
+  const description = payload.description || existing.description;
+  const instructions = payload.instructions !== undefined ? payload.instructions : existing.instructions;
+
+  try {
+    db.prepare('UPDATE recipes SET name = ?, description = ?, instructions = ? WHERE id = ?').run(
+      name,
+      description,
+      instructions,
+      existing.id
+    );
+    return true;
+  } catch (err) {
+    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') return false;
+    throw err;
+  }
 }
 
 export function deleteRecipe(idOrName) {
-  const data = loadRecipes();
-  const target = String(idOrName).toLowerCase();
+  const existing = getRecipe(idOrName);
+  if (!existing) return false;
 
-  const index = data.findIndex(
-    r => r.name.toLowerCase() === target
-  );
-  if (index === -1) return false;
-
-  data.splice(index, 1);
-  saveRecipes(data);
+  db.prepare('DELETE FROM recipes WHERE id = ?').run(existing.id);
   return true;
 }
 
@@ -128,6 +130,6 @@ export default {
   getAllRecipes,
   getRecipe,
   addRecipe,
-  deleteRecipe,
-  loadRecipes
+  updateRecipe,
+  deleteRecipe
 };

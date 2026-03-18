@@ -4,6 +4,7 @@ import {
   getAllRecipes,
   getRecipe,
   addRecipe,
+  updateRecipe,
   deleteRecipe
 } from './models/recipes.js';
 
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
   res.render('index', {
-    title: 'Strona główna - Projekt03',
+    title: 'Home - CookBook',
     error: !!req.query.error
   });
 });
@@ -93,23 +94,16 @@ app.post('/edit/:id', (req, res) => {
   let id = req.params.id;
   try { id = decodeURIComponent(id); } catch {}
 
-  const existing = getRecipe(id);
-  if (!existing) return res.status(404).send('Recipe not found');
-
   const { title, ingredients, instructions } = req.body;
 
   const updatedRecipe = {
-    name: (title || existing.name).trim(),
-    description: (ingredients || existing.description)
-      .split('\n')
-      .map(s => s.trim())
-      .filter(Boolean)
-      .join(', '),
-    instructions: (instructions || existing.instructions).trim()
+    name: (title || '').trim(),
+    description: (ingredients || '').trim(),
+    instructions: (instructions || '').trim()
   };
 
-  deleteRecipe(id);
-  addRecipe(updatedRecipe);
+  const success = updateRecipe(id, updatedRecipe);
+  if (!success) return res.status(404).send('Recipe not found');
 
   res.redirect('/recipes');
 });
