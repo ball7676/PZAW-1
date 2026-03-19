@@ -16,6 +16,18 @@
   --radius-sm: 8px;
 }
 
+[data-theme="dark"] {
+  --bg: #1a1a2e;
+  --card: #16213e;
+  --text: #e2e8f0;
+  --text-muted: #a78bfa;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-weak: rgba(139, 92, 246, 0.15);
+  --border: #2d2d4a;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -413,4 +425,71 @@ a:hover {
   .hero-buttons {
     flex-direction: column;
   }
+}
+
+.settings-wrapper {
+  position: fixed;
+  top: 1rem;
+  right: 1.5rem;
+  z-index: 100;
+}
+
+.settings-btn {
+  background: transparent;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  color: var(--text);
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+
+.settings-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px var(--shadow);
+  overflow: hidden;
+  min-width: 120px;
+  margin-top: 0.5rem;
+}
+
+.settings-dropdown.show {
+  display: block;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-align: left;
+  transition: background 0.2s ease;
+}
+
+.theme-btn:hover {
+  background: var(--accent-weak);
+}
+
+.theme-btn.active {
+  background: var(--accent-weak);
+  font-weight: 600;
 }

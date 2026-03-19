@@ -1,17 +1,16 @@
-<!doctype html>
-<html>
-  <%- include('head.ejs') %>
-  <body>
-    <div class="container">
-      <div class="recipe-content" style="text-align: center;">
-        <h1><%= recipe.name %></h1>
-        <p class="recipe-meta"><%= recipe.description %></p>
-        <h2>Instructions</h2>
-        <p><%= recipe.instructions %></p>
-        <div class="form-buttons" style="justify-content: center; margin-top: 1.5rem;">
-          <a class="btn" href="/recipes">Back to list</a>
-        </div>
+<%- include('head.ejs') %>
+<body>
+  <div class="container">
+    <div class="recipe-content" style="text-align: center;">
+      <h1><%= recipe.name %></h1>
+      <p class="recipe-meta"><%= recipe.description %></p>
+      <h2>Instructions</h2>
+      <p><%= recipe.instructions %></p>
+      <div class="form-buttons" style="justify-content: center; margin-top: 1.5rem;">
+        <a class="btn" href="/recipes">Back to list</a>
       </div>
     </div>
-  </body>
+  </div>
+  <%- include('footer') %>
+</body>
 </html>
