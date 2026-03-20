@@ -24,6 +24,10 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/account', (req, res) => {
+  res.render('account', { title: 'Account' });
+});
+
 app.get('/add', (req, res) => {
   res.render('add', { title: 'Add Recipe' });
 });

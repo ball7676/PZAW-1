@@ -18,58 +18,42 @@
     document.querySelectorAll('.theme-btn').forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-theme') === theme);
     });
+    var navIcon = document.getElementById('nav-icon');
+    var settingsIcon = document.getElementById('settings-icon');
+    if (navIcon) {
+      navIcon.src = '/iconfiles/account' + (theme === 'dark' ? 'W' : '') + '.png';
+    }
+    if (settingsIcon) {
+      settingsIcon.src = '/iconfiles/settings' + (theme === 'dark' ? 'W' : '') + '.png';
+    }
   }
 
-
   function init(){
-    var popup = document.getElementById('cookie-popup');
-    var openBtn = document.getElementById('theme-open');
-    var saveBtn = document.getElementById('cookie-save');
-    var closeBtn = document.getElementById('cookie-close');
-    var themeButtons = document.querySelectorAll('.theme-btn');
+    var settingsBtn = document.getElementById('settingsBtn');
+    var settingsDropdown = document.getElementById('settingsDropdown');
 
-    var existing = getCookie('site_theme');
+    var existing = getCookie('theme');
     if (existing) applyTheme(existing);
-    else setTimeout(showPopup, 700);
+    else applyTheme('light');
 
-    function showPopup(){
-      if (!popup) return;
-      popup.classList.remove('hidden');
-      popup.setAttribute('aria-hidden', 'false');
-    }
-    function hidePopup(){
-      if (!popup) return;
-      popup.classList.add('hidden');
-      popup.setAttribute('aria-hidden', 'true');
-    }
-
-    themeButtons.forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var t = btn.getAttribute('data-theme');
-        applyTheme(t);
+    if (settingsBtn && settingsDropdown) {
+      settingsBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        settingsDropdown.classList.toggle('show');
       });
-    });
 
-    if (saveBtn) saveBtn.addEventListener('click', function(){
-      var active = document.querySelector('.theme-btn.active');
-      var theme = active ? active.getAttribute('data-theme') : (getCookie('site_theme') || 'light');
-      setCookie('site_theme', theme, 365);
-      applyTheme(theme);
-      hidePopup();
-    });
+      document.addEventListener('click', function(){
+        settingsDropdown.classList.remove('show');
+      });
 
-    if (closeBtn) closeBtn.addEventListener('click', function(){
-      hidePopup();
-    });
-
-    if (openBtn) openBtn.addEventListener('click', function(){
-      showPopup();
-    });
-
-    window.setSiteTheme = function(theme, persist){
-      applyTheme(theme);
-      if (persist) setCookie('site_theme', theme, 365);
-    };
+      document.querySelectorAll('.theme-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          var t = btn.getAttribute('data-theme');
+          setCookie('theme', t, 365);
+          applyTheme(t);
+        });
+      });
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

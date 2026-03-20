@@ -1,6 +1,9 @@
-# projekt02
+# Projekt04 - CookBook
 
-By uruchomic projekt wystarczy wpisac 'npm install' i 'node index.js'
+## Działanie
 
-Wszystkie dane znajduja sie w pliku database/data/dane_bazowe.txt, mozliwe jest tam edytowanie, usuwanie i dodawanie danych bez uzycia formularza
+Wystarczy wpisać kolejno:
+npm install
+node index.js
 
+Serwer działa na localhost:8000

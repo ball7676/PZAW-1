@@ -28,6 +28,12 @@
   --shadow: rgba(0, 0, 0, 0.3);
 }
 
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color: var(--text);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -427,11 +433,32 @@ a:hover {
   }
 }
 
-.settings-wrapper {
+.nav-buttons {
   position: fixed;
   top: 1rem;
   right: 1.5rem;
   z-index: 100;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text);
+  padding: 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  text-decoration: none;
 }
 
 .settings-btn {

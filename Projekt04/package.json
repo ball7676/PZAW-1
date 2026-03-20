@@ -1,7 +1,7 @@
 {
-  "name": "projekt02",
+  "name": "projekt04",
   "version": "1.0.0",
-  "description": "Express server with dynamic views for Projekt 02",
+  "description": "Strona internetowa CookBook, obecnie zrobione jest dodawanie, edycja i podgląd przepisów znajdujących się w funkcjonującej bazie danych. Ustawienia strony są w fazie rozwoju - jedynym działającym ustawieniem jest zmiana motywu na jasny bądź cziemny. Logowanie i tworzenie kont jest następnym celem / elementem strony. (długi opis ale czemu nie)",
   "main": "index.js",
   "type": "module",
   "scripts": {
