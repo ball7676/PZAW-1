@@ -9,6 +9,14 @@
 </head>
 <body>
   <div class="nav-buttons">
+    <% if (user && user.username === 'admin') { %>
+      <a href="/admin/users" class="nav-btn" aria-label="Admin">
+        <img src="/iconfiles/list.png" alt="Admin" width="28" height="28" />
+      </a>
+      <a href="/postconfirm" class="nav-btn" aria-label="Post Confirm">
+        <img id="confirm-icon" src="/iconfiles/adminconfirm.png" alt="Post Confirm" width="28" height="28" />
+      </a>
+    <% } %>
     <a href="/account" class="nav-btn" aria-label="Account">
       <img id="nav-icon" src="/iconfiles/account.png" alt="Account" width="28" height="28" />
     </a>

@@ -1,0 +1,30 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <% if (!Array.isArray(pendingRecipes) || pendingRecipes.length === 0) { %>
+      <p>No pending recipes.</p>
+    <% } else { %>
+      <div class="recipe-list">
+        <% pendingRecipes.forEach(function(recipe){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+            <p><%= recipe.description %></p>
+            <div class="card-buttons">
+              <form action="/admin/pending/<%= encodeURIComponent(recipe.id) %>/accept" method="POST">
+                <button type="submit" class="btn">Accept</button>
+              </form>
+              <form action="/admin/pending/<%= encodeURIComponent(recipe.id) %>/decline" method="POST">
+                <button type="submit" class="btn delete">Decline</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/account">Back to Account</a>
+    </div>
+  </div>
+<%- include('footer') %>

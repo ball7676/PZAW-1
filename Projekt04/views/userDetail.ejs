@@ -1,0 +1,17 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <div class="card">
+      <h3>Username: <%= user.username %></h3>
+      <p><strong>User ID:</strong> <%= user.id %></p>
+      <div class="form-buttons" style="margin-top: 1rem;">
+        <a class="btn secondary" href="/admin/users/<%= user.id %>/recipes">View User Recipes</a>
+      </div>
+    </div>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/admin/users">Back to User List</a>
+    </div>
+  </div>
+<%- include('footer') %>

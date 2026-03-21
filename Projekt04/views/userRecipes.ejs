@@ -1,0 +1,32 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <% if (!Array.isArray(recipes) || recipes.length === 0) { %>
+      <p>This user has no recipes.</p>
+    <% } else { %>
+      <div class="recipe-list">
+        <% recipes.forEach(function(recipe){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+            <p><%= recipe.description %></p>
+            <% if (recipe.user_id !== null) { %>
+              <div class="card-buttons">
+                <form action="/admin/users/<%= user.id %>/recipes/<%= encodeURIComponent(recipe.id) %>/edit" method="GET">
+                  <button type="submit" class="btn btn-edit">Edit</button>
+                </form>
+                <form action="/admin/users/<%= user.id %>/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
+                  <button type="submit" class="btn delete">Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/admin/users/<%= user.id %>">Back to User Details</a>
+    </div>
+  </div>
+<%- include('footer') %>

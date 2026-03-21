@@ -20,8 +20,16 @@
     });
     var navIcon = document.getElementById('nav-icon');
     var settingsIcon = document.getElementById('settings-icon');
+    var listIcon = document.querySelector('a[href="/admin/users"] img');
+    var confirmIcon = document.getElementById('confirm-icon');
     if (navIcon) {
       navIcon.src = '/iconfiles/account' + (theme === 'dark' ? 'W' : '') + '.png';
+    }
+    if (listIcon) {
+      listIcon.src = '/iconfiles/list' + (theme === 'dark' ? 'W' : '') + '.png';
+    }
+    if (confirmIcon) {
+      confirmIcon.src = '/iconfiles/adminconfirm' + (theme === 'dark' ? 'W' : '') + '.png';
     }
     if (settingsIcon) {
       settingsIcon.src = '/iconfiles/settings' + (theme === 'dark' ? 'W' : '') + '.png';

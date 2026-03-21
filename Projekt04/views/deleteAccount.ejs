@@ -1,0 +1,32 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <div class="card" style="max-width: 400px; margin: 0 auto;">
+      <h2 style="text-align: center;">Delete Account</h2>
+      <p style="text-align: center;">Are you sure you want to delete your account? This action cannot be undone.</p>
+      
+      <% if (error) { %>
+        <p style="color: var(--delete); text-align: center;"><%= error %></p>
+      <% } %>
+
+      <form action="/delete-account" method="POST" class="recipe-form">
+        <label>
+          Username
+          <input name="username" required type="text" class="form-input"/>
+        </label>
+
+        <label>
+          Password
+          <input name="password" required type="password" class="form-input"/>
+        </label>
+
+        <div class="form-buttons" style="margin-top: 1rem;">
+          <button class="btn delete" type="submit">Delete Account</button>
+        </div>
+      </form>
+
+      <div class="form-buttons" style="margin-top: 1rem;">
+        <a class="btn secondary" href="/account">Cancel</a>
+      </div>
+    </div>
+  </div>
+<%- include('footer') %>

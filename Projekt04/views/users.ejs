@@ -1,0 +1,21 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <% if (!Array.isArray(users) || users.length === 0) { %>
+      <p>No users found.</p>
+    <% } else { %>
+      <div class="recipe-list">
+        <% users.forEach(function(user){ %>
+          <div class="card">
+            <h3><a href="/admin/users/<%= user.id %>"><%= user.username %></a></h3>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/account">Back to Account</a>
+    </div>
+  </div>
+<%- include('footer') %>

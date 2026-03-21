@@ -63,11 +63,33 @@ export function verifyUser(username, password) {
   return { id: user.id, username: user.username };
 }
 
+export function getAllUsers() {
+  return db.prepare('SELECT id, username FROM users').all();
+}
+
+export function deleteUser(id, username, password) {
+  const user = getUserById(id);
+  if (!user) return { success: false, error: 'User not found' };
+  if (user.username !== username) return { success: false, error: 'Username mismatch' };
+  
+  const userData = getUser(username);
+  if (!userData) return { success: false, error: 'User not found' };
+  
+  const hashedPassword = hashPassword(password, userData.salt);
+  if (userData.password !== hashedPassword) return { success: false, error: 'Invalid password' };
+  
+  db.prepare('DELETE FROM recipes WHERE user_id = ?').run(id);
+  db.prepare('DELETE FROM users WHERE id = ?').run(id);
+  return { success: true };
+}
+
 export default {
   getUser,
   getUserById,
   createUser,
   verifyUser,
   generateSalt,
-  hashPassword
+  hashPassword,
+  getAllUsers,
+  deleteUser
 };

@@ -5,8 +5,13 @@
       <p class="recipe-meta"><%= recipe.description %></p>
       <h2>Instructions</h2>
       <p><%= recipe.instructions %></p>
-      <div class="form-buttons" style="justify-content: center; margin-top: 1.5rem;">
-        <a class="btn" href="/recipes">Back to list</a>
+      <div class="form-buttons" style="justify-content: center; margin-top: 1.5rem; gap: 1rem;">
+        <a class="btn" href="/postconfirm">Back to list</a>
+        <% if (user && recipe.user_id === user.id) { %>
+          <form action="/my-recipes/<%= encodeURIComponent(recipe.id) %>/post" method="POST" style="display: inline;">
+            <button type="submit" class="btn">Post Recipe</button>
+          </form>
+        <% } %>
       </div>
     </div>
   </div>
