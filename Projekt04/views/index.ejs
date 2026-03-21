@@ -6,7 +6,11 @@
         <p class="hero-subtitle">Discover and share delicious recipes from around the world</p>
         <div class="hero-buttons">
           <a class="btn" href="/recipes">Browse Recipes</a>
-          <a class="btn secondary" href="/add">Add Recipe</a>
+          <% if (user) { %>
+            <a class="btn secondary" href="/add">Add Recipe</a>
+          <% } else { %>
+            <a class="btn secondary" href="/login">Login to Add Recipe</a>
+          <% } %>
         </div>
       </section>
 

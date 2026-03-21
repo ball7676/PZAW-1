@@ -1,0 +1,38 @@
+CookBook - Starting Recipes
+
+1. Spaghetti Carbonara
+Description: Classic Italian pasta dish with spaghetti in a sauce made from eggs, parmesan, bacon, and pepper.
+Instructions: Cook spaghetti until al dente. On a pan, fry the bacon until crispy. In a bowl, mix eggs with grated parmesan and pepper. Toss the hot pasta with the bacon and remove from heat. Add the egg mixture and mix thoroughly to create a creamy sauce.
+
+2. Chicken Curry
+Description: Aromatic chicken curry in a creamy coconut sauce with Indian spices.
+Instructions: Sauté onion, garlic, and ginger in oil. Add curry powder and turmeric. Add chicken pieces and brown on all sides. Pour in coconut milk and simmer covered for about 20 minutes until the sauce thickens.
+
+3. Beef Stroganoff
+Description: Russian dish with tender beef in a creamy mushroom sauce.
+Instructions: Cut beef into thin strips and sauté in a pan. Add onion and mushrooms, fry until golden. Pour in broth, add mustard and cream, then simmer on low heat for a few minutes until the sauce thickens.
+
+
+4. Pad Thai
+Description: Traditional Thai dish with rice noodles fried with egg, tofu, shrimp, and tamarind sauce.
+Instructions: Soak rice noodles in warm water. On a pan, sauté garlic, tofu, and shrimp. Add noodles, crack in egg and stir. Pour in tamarind sauce, fish sauce, and a bit of sugar. Serve with peanuts and lime.
+
+
+5. Vegetable Stir Fry
+Description: Colorful stir-fry with vegetables cooked in soy and sesame sauce.
+Instructions: Cut vegetables (bell pepper, broccoli, carrots, zucchini). Heat a wok and fry vegetables on high heat for a few minutes. Add soy sauce, garlic, and a bit of sesame oil. Serve with rice or noodles.
+
+
+6. Fish Tacos
+Description: Mexican tacos with crispy fish, fresh vegetables, and creamy sauce.
+Instructions: Cut fish fillets, coat in seasoned breadcrumbs and fry. In warmed tortillas, place fish, add cabbage, tomato, and yogurt-lime sauce. Roll up tacos and serve immediately.
+
+
+7. Lentil Soup
+Description: Nutritious red lentil soup with vegetables and spices.
+Instructions: Sauté onion, garlic, and carrots. Add lentils, canned tomatoes, and vegetable broth. Cook for about 25 minutes until lentils soften. Season with cumin, paprika, and salt.
+
+
+8. Caesar Salad
+Description: Classic salad with crispy romaine lettuce, croutons, parmesan, and Caesar dressing.
+Instructions: Prepare dressing with mayonnaise, mustard, garlic, anchovies, lemon, and parmesan. Chop lettuce, add croutons and grated cheese. Drizzle with dressing and toss just before serving.

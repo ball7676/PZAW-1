@@ -1,7 +1,7 @@
 {
   "name": "projekt04",
   "version": "1.0.0",
-  "description": "Strona internetowa CookBook, obecnie zrobione jest dodawanie, edycja i podgląd przepisów znajdujących się w funkcjonującej bazie danych. Ustawienia strony są w fazie rozwoju - jedynym działającym ustawieniem jest zmiana motywu na jasny bądź cziemny. Logowanie i tworzenie kont jest następnym celem / elementem strony. (długi opis ale czemu nie)",
+  "description": "Strona internetowa CookBook, obecnie zrobione jest dodawanie, edycja i podgląd przepisów znajdujących się w funkcjonującej bazie danych. Ustawienia strony są w fazie rozwoju - jedynym działającym ustawieniem jest zmiana motywu na jasny bądź cziemny. Logowanie i tworzenie kont zostało dodane, ostatnim krokiem jest dodanie konta admin! (długi opis ale czemu nie)",
   "main": "index.js",
   "type": "module",
   "scripts": {

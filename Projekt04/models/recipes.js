@@ -7,11 +7,23 @@ const db = new Database(DB_PATH);
 db.exec(`
   CREATE TABLE IF NOT EXISTS recipes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
+    name TEXT NOT NULL,
     description TEXT,
-    instructions TEXT
+    instructions TEXT,
+    user_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
+
+const columns = db.prepare("PRAGMA table_info(recipes)").all().map(c => c.name);
+if (!columns.includes('user_id')) {
+  db.exec(`ALTER TABLE recipes ADD COLUMN user_id INTEGER`);
+}
+if (!columns.includes('created_at')) {
+  db.exec(`ALTER TABLE recipes ADD COLUMN created_at TEXT`);
+}
+
+db.exec(`CREATE INDEX IF NOT EXISTS idx_recipes_user_id ON recipes(user_id)`);
 
 const existingCount = db.prepare('SELECT COUNT(*) as count FROM recipes').get();
 if (existingCount.count === 0) {
@@ -58,46 +70,64 @@ if (existingCount.count === 0) {
     }
   ];
 
-  const insert = db.prepare('INSERT INTO recipes (name, description, instructions) VALUES (?, ?, ?)');
+  const insert = db.prepare('INSERT OR IGNORE INTO recipes (name, description, instructions, created_at) VALUES (?, ?, ?, datetime("now"))');
   for (const recipe of seedRecipes) {
     insert.run(recipe.name, recipe.description, recipe.instructions);
   }
 }
 
-export function getAllRecipes() {
-  const rows = db.prepare('SELECT id, name, description FROM recipes ORDER BY id').all();
+export function getAllRecipes(userId = null) {
+  const rows = db.prepare('SELECT id, name, description, user_id FROM recipes WHERE user_id IS NULL OR user_id = ? ORDER BY id').all(userId);
   return rows;
 }
 
-export function getRecipe(idOrName) {
+export function getSeedRecipes() {
+  return db.prepare('SELECT id, name, description FROM recipes WHERE user_id IS NULL ORDER BY id').all();
+}
+
+export function getUserRecipes(userId) {
+  return db.prepare('SELECT id, name, description FROM recipes WHERE user_id = ? ORDER BY id').all(userId);
+}
+
+export function isOwner(recipeId, userId) {
+  const row = db.prepare('SELECT user_id FROM recipes WHERE id = ?').get(recipeId);
+  if (!row) return false;
+  return row.user_id === userId;
+}
+
+export function getRecipe(idOrName, userId = null) {
   let row;
   if (/^\d+$/.test(String(idOrName))) {
-    row = db.prepare('SELECT * FROM recipes WHERE id = ?').get(idOrName);
+    if (userId) {
+      row = db.prepare('SELECT * FROM recipes WHERE id = ? AND (user_id = ? OR user_id IS NULL)').get(idOrName, userId);
+    } else {
+      row = db.prepare('SELECT * FROM recipes WHERE id = ?').get(idOrName);
+    }
   } else {
-    row = db.prepare('SELECT * FROM recipes WHERE LOWER(name) = LOWER(?)').get(String(idOrName));
+    if (userId) {
+      row = db.prepare('SELECT * FROM recipes WHERE LOWER(name) = LOWER(?) AND (user_id = ? OR user_id IS NULL)').get(String(idOrName), userId);
+    } else {
+      row = db.prepare('SELECT * FROM recipes WHERE LOWER(name) = LOWER(?)').get(String(idOrName));
+    }
   }
   return row || null;
 }
 
-export function addRecipe(payload) {
+export function addRecipe(payload, userId = null) {
   const name = payload?.name?.trim();
   if (!name || !payload.description) return null;
 
-  try {
-    const result = db.prepare('INSERT INTO recipes (name, description, instructions) VALUES (?, ?, ?)').run(
-      name,
-      payload.description,
-      payload.instructions || ''
-    );
-    return { id: result.lastInsertRowid, name, description: payload.description, instructions: payload.instructions || '' };
-  } catch (err) {
-    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') return null;
-    throw err;
-  }
+  const result = db.prepare(`INSERT INTO recipes (name, description, instructions, user_id, created_at) VALUES (?, ?, ?, ?, datetime('now'))`).run(
+    name,
+    payload.description,
+    payload.instructions || '',
+    userId
+  );
+  return { id: result.lastInsertRowid, name, description: payload.description, instructions: payload.instructions || '', user_id: userId };
 }
 
-export function updateRecipe(idOrName, payload) {
-  const existing = getRecipe(idOrName);
+export function updateRecipe(idOrName, payload, userId = null) {
+  const existing = getRecipe(idOrName, userId);
   if (!existing) return false;
 
   const name = payload.name?.trim() || existing.name;
@@ -113,13 +143,12 @@ export function updateRecipe(idOrName, payload) {
     );
     return true;
   } catch (err) {
-    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') return false;
-    throw err;
+    return false;
   }
 }
 
-export function deleteRecipe(idOrName) {
-  const existing = getRecipe(idOrName);
+export function deleteRecipe(idOrName, userId = null) {
+  const existing = getRecipe(idOrName, userId);
   if (!existing) return false;
 
   db.prepare('DELETE FROM recipes WHERE id = ?').run(existing.id);
@@ -128,6 +157,9 @@ export function deleteRecipe(idOrName) {
 
 export default {
   getAllRecipes,
+  getSeedRecipes,
+  getUserRecipes,
+  isOwner,
   getRecipe,
   addRecipe,
   updateRecipe,
