@@ -21,6 +21,38 @@
           <textarea name="instructions" rows="8" class="form-textarea"></textarea>
         </label>
 
+        <label>
+          Category
+          <select name="category" class="form-input">
+            <option value="">Select category...</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Lunch">Lunch</option>
+            <option value="Dinner">Dinner</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Snack">Snack</option>
+            <option value="Beverage">Beverage</option>
+            <option value="Soup">Soup</option>
+            <option value="Salad">Salad</option>
+            <option value="Appetizer">Appetizer</option>
+            <option value="Side Dish">Side Dish</option>
+          </select>
+        </label>
+
+        <label>
+          Cooking Time (minutes)
+          <input name="cooking_time" type="number" min="0" class="form-input" placeholder="e.g., 30"/>
+        </label>
+
+        <label>
+          Difficulty
+          <select name="difficulty" class="form-input">
+            <option value="">Select difficulty...</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </label>
+
         <div class="form-buttons">
           <button class="btn" type="submit">Add recipe</button>
           <a class="btn secondary" href="/recipes">Cancel</a>

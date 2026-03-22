@@ -2,45 +2,99 @@
   <div class="container">
     <h1><%= title %></h1>
 
+    <% if (user && user.username === 'admin') { %>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <form action="/admin/reset-seed-recipes" method="POST" style="display: inline;">
+          <button type="submit" class="btn secondary" onclick="return confirm('Reset all seed recipes?')">Reset Seed Recipes</button>
+        </form>
+      </div>
+    <% } %>
+
+    <form action="/recipes" method="GET" style="margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; align-items: center;">
+        <input type="text" name="search" class="form-input" placeholder="Search recipes..." value="<%= search || '' %>" style="max-width: 250px;" />
+        <select name="sort" class="form-input" style="max-width: 150px;">
+          <option value="id" <%= sort === 'id' ? 'selected' : '' %>>Default</option>
+          <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name (A-Z)</option>
+          <option value="created" <%= sort === 'created' ? 'selected' : '' %>>Newest</option>
+        </select>
+        <select name="category" class="form-input" style="max-width: 150px;">
+          <option value="">All Categories</option>
+          <% if (categories && categories.length > 0) { %>
+            <% categories.forEach(function(cat){ %>
+              <option value="<%= cat %>" <%= category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }) %>
+          <% } %>
+        </select>
+        <button type="submit" class="btn">Search</button>
+        <% if (search || sort !== 'id' || category) { %>
+          <a class="btn secondary" href="/recipes">Clear</a>
+        <% } %>
+      </div>
+    </form>
+
     <% if (!Array.isArray(recipes) || recipes.length === 0) { %>
-      <p>No recipes available.</p>
+      <p>No recipes found.</p>
       <% if (!isLoggedIn) { %>
         <p>Login to add your own recipes!</p>
       <% } %>
     <% } else { %>
+      <p style="text-align: center; color: var(--text-muted);">Showing <%= recipes.length %> of <%= pagination.total %> recipes</p>
       <div class="recipe-list">
         <% recipes.forEach(function(recipe){ %>
-          <div class="card">
+          <div class="card" <% if (recipe.isFavorited) { %>style="border: 2px solid #f0c000;"<% } %>>
             <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
             <p><%= recipe.description %></p>
+            <% if (recipe.category || recipe.cooking_time || recipe.difficulty) { %>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                <% if (recipe.category) { %><%= recipe.category %><% } %>
+                <% if (recipe.cooking_time) { %> | <%= recipe.cooking_time %> min<% } %>
+                <% if (recipe.difficulty) { %> | <%= recipe.difficulty %><% } %>
+              </p>
+            <% } %>
             <% if (user && (user.username === 'admin' || recipe.user_id === user.id)) { %>
               <div class="card-buttons">
                 <% if (user.username === 'admin') { %>
                   <form action="/admin/recipes/<%= encodeURIComponent(recipe.id) %>/edit" method="GET">
                     <button type="submit" class="btn btn-edit">Edit</button>
                   </form>
-                  <form action="/admin/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
-                    <button type="submit" class="btn delete">Delete</button>
-                  </form>
+                  <a class="btn delete" href="/admin/recipes/<%= encodeURIComponent(recipe.id) %>/delete/confirm">Delete</a>
                 <% } else { %>
                   <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="GET">
                     <button type="submit" class="btn btn-edit">Edit</button>
                   </form>
-                  <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
-                    <button type="submit" class="btn delete">Delete</button>
-                  </form>
+                  <a class="btn delete" href="/recipes/<%= encodeURIComponent(recipe.id) %>/delete/confirm">Delete</a>
                 <% } %>
               </div>
             <% } %>
           </div>
         <% }) %>
       </div>
+
+      <% if (pagination.totalPages > 1) { %>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+          <% if (pagination.page > 1) { %>
+            <a class="btn secondary" href="?page=<%= pagination.page - 1 %>&search=<%= encodeURIComponent(search || '') %>&sort=<%= sort %>&category=<%= encodeURIComponent(category || '') %>">Previous</a>
+          <% } %>
+          <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+            <% if (i === pagination.page) { %>
+              <span class="btn" style="background: var(--accent);"><%= i %></span>
+            <% } else if (i <= 3 || i > pagination.totalPages - 3 || Math.abs(i - pagination.page) <= 1) { %>
+              <a class="btn secondary" href="?page=<%= i %>&search=<%= encodeURIComponent(search || '') %>&sort=<%= sort %>&category=<%= encodeURIComponent(category || '') %>"><%= i %></a>
+            <% } %>
+          <% } %>
+          <% if (pagination.page < pagination.totalPages) { %>
+            <a class="btn secondary" href="?page=<%= pagination.page + 1 %>&search=<%= encodeURIComponent(search || '') %>&sort=<%= sort %>&category=<%= encodeURIComponent(category || '') %>">Next</a>
+          <% } %>
+        </div>
+      <% } %>
     <% } %>
 
     <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
       <a class="btn" href="/">Home</a>
       <% if (isLoggedIn) { %>
         <a class="btn secondary" href="/my-recipes">My Recipes</a>
+        <a class="btn secondary" href="/favorites">Favorites</a>
       <% } else { %>
         <a class="btn secondary" href="/login">Login</a>
       <% } %>

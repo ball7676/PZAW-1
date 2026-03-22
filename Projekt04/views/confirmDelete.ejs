@@ -1,0 +1,31 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <div class="recipe-content" style="text-align: center;">
+      <h1>Confirm Delete</h1>
+      <p>To confirm deletion of "<strong><%= recipe.name %></strong>", please type:</p>
+      <p style="font-family: monospace; font-size: 1.2rem; color: var(--accent);">Delete <%= recipe.name %></p>
+      
+      <form action="<%= deleteUrl %>" method="POST" class="recipe-form" style="max-width: 400px; margin: 1.5rem auto;">
+        <input type="hidden" name="confirmValue" value="<%= recipe.name %>" />
+        <label>
+          Type the confirmation text:
+          <input type="text" name="confirm" id="confirmInput" class="form-input" autocomplete="off" />
+        </label>
+        <div class="form-buttons" style="margin-top: 1rem;">
+          <button type="submit" class="btn delete" id="deleteBtn" disabled>Delete Recipe</button>
+          <a class="btn secondary" href="<%= cancelUrl %>">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const input = document.getElementById('confirmInput');
+    const btn = document.getElementById('deleteBtn');
+    const recipeName = document.querySelector('input[name="confirmValue"]').value;
+    const expected = 'Delete ' + recipeName;
+    
+    input.addEventListener('input', function() {
+      btn.disabled = this.value !== expected;
+    });
+  </script>
+<%- include('footer') %>

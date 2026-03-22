@@ -2,6 +2,14 @@
   <div class="container">
     <h1><%= title %></h1>
 
+    <form action="/admin/users" method="GET" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+      <input type="text" name="q" class="form-input" placeholder="Search usernames..." value="<%= searchQuery || '' %>" style="max-width: 300px;" />
+      <button type="submit" class="btn">Search</button>
+      <% if (searchQuery) { %>
+        <a class="btn secondary" href="/admin/users">Clear</a>
+      <% } %>
+    </form>
+
     <% if (!Array.isArray(users) || users.length === 0) { %>
       <p>No users found.</p>
     <% } else { %>

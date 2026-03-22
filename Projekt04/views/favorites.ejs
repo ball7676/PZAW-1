@@ -1,0 +1,37 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <% if (!Array.isArray(favorites) || favorites.length === 0) { %>
+      <p>You haven't added any favorites yet.</p>
+      <p>Browse recipes and click the heart icon to add favorites!</p>
+    <% } else { %>
+      <p style="text-align: center; color: var(--text-muted);">You have <%= favorites.length %> favorite(s)</p>
+      <div class="recipe-list">
+        <% favorites.forEach(function(recipe){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+            <p><%= recipe.description %></p>
+            <% if (recipe.category || recipe.cooking_time || recipe.difficulty) { %>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                <% if (recipe.category) { %><%= recipe.category %><% } %>
+                <% if (recipe.cooking_time) { %> | <%= recipe.cooking_time %> min<% } %>
+                <% if (recipe.difficulty) { %> | <%= recipe.difficulty %><% } %>
+              </p>
+            <% } %>
+            <div class="card-buttons">
+              <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/favorite" method="POST">
+                <button type="submit" class="btn delete">❤️ Remove</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/recipes">Browse Recipes</a>
+      <a class="btn secondary" href="/profile">Back to Profile</a>
+    </div>
+  </div>
+<%- include('footer') %>

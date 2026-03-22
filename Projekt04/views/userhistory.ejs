@@ -1,0 +1,39 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+      <a class="btn <%= filter === 'all' ? '' : 'secondary' %>" href="?filter=all">All</a>
+      <a class="btn <%= filter === 'created' ? '' : 'secondary' %>" href="?filter=created">Created</a>
+      <a class="btn <%= filter === 'accepted' ? '' : 'secondary' %>" href="?filter=accepted">Accepted</a>
+      <a class="btn <%= filter === 'declined' ? '' : 'secondary' %>" href="?filter=declined">Declined</a>
+      <a class="btn <%= filter === 'edited' ? '' : 'secondary' %>" href="?filter=edited">Edited</a>
+      <a class="btn <%= filter === 'deleted' ? '' : 'secondary' %>" href="?filter=deleted">Deleted</a>
+    </div>
+
+    <% if (user && Array.isArray(history) && history.length > 0) { %>
+      <div class="recipe-list">
+        <% history.forEach(function(entry){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(entry.recipe_id) %>?fromHistory=1"><%= entry.recipe_name %></a></h3>
+            <p><strong>Action:</strong> <%= entry.action %></p>
+            <p><strong>By:</strong> <%= entry.username || 'Unknown' %></p>
+            <p><strong>Time:</strong> <%= entry.performed_at %></p>
+            <% if (entry.details) { %>
+              <p><strong>Details:</strong> <%= entry.details %></p>
+            <% } %>
+            <p><strong>Recipe ID:</strong> <%= entry.recipe_id %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } else if (user) { %>
+      <p>No history yet.</p>
+    <% } else { %>
+      <p>Coming soon...</p>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn" href="/account">Back to Account</a>
+    </div>
+  </div>
+<%- include('footer') %>

@@ -10,7 +10,14 @@ import {
   generateSalt,
   hashPassword,
   getAllUsers,
-  deleteUser
+  searchUsers,
+  deleteUser,
+  updatePassword,
+  getUserCreatedAt,
+  getUserFavorites,
+  addFavorite,
+  removeFavorite,
+  isFavorited
 } from './models/users.js';
 import {
   getAllRecipes,
@@ -23,7 +30,14 @@ import {
   deleteRecipeById,
   duplicateRecipeForUser,
   getPendingRecipes,
-  getUserPostedCount
+  getUserPostedCount,
+  getRecipeHistory,
+  getUserRecipeHistory,
+  addRecipeHistory,
+  resetSeedRecipes,
+  updateRecipeFull,
+  getCategories,
+  getUserRecipesWithFavorites
 } from './models/recipes.js';
 
 const db = new Database(path.join(process.cwd(), 'database', 'recipes.db'));
@@ -120,9 +134,101 @@ app.get('/account', (req, res) => {
   }
 });
 
+app.get('/userhistory', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  const filter = req.query.filter || 'all';
+  
+  let allHistory;
+  if (req.user.username === 'admin') {
+    allHistory = getRecipeHistory();
+  } else {
+    allHistory = getUserRecipeHistory(req.user.id);
+  }
+  
+  let history;
+  if (filter === 'all') {
+    history = allHistory;
+  } else {
+    history = allHistory.filter(entry => entry.action === filter);
+  }
+  
+  res.render('userhistory', { title: 'Recipe History', user: req.user, history, filter });
+});
+
+app.get('/favorites', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  const favorites = getUserFavorites(req.user.id);
+  res.render('favorites', { title: 'My Favorites', favorites });
+});
+
+app.post('/recipes/:id/favorite', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+  
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.redirect('/recipes');
+  
+  if (isFavorited(req.user.id, id)) {
+    removeFavorite(req.user.id, id);
+  } else {
+    addFavorite(req.user.id, id);
+  }
+  
+  const referer = req.headers.referer || '/recipes';
+  res.redirect(referer);
+});
+
+app.get('/profile', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  const createdAt = getUserCreatedAt(req.user.id);
+  const favorites = getUserFavorites(req.user.id);
+  const postedCount = getUserPostedCount(req.user.id);
+  const userRecipes = getUserRecipes(req.user.id);
+  res.render('profile', { 
+    title: 'My Profile', 
+    user: req.user, 
+    createdAt, 
+    favorites, 
+    postedCount,
+    userRecipes
+  });
+});
+
+app.get('/change-password', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  res.render('changePassword', { title: 'Change Password', user: req.user, error: null, success: null });
+});
+
+app.post('/change-password', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+  
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res.render('changePassword', { title: 'Change Password', user: req.user, error: 'All fields are required', success: null });
+  }
+  
+  if (newPassword !== confirmPassword) {
+    return res.render('changePassword', { title: 'Change Password', user: req.user, error: 'New passwords do not match', success: null });
+  }
+  
+  const result = updatePassword(req.user.id, oldPassword, newPassword);
+  if (!result.success) {
+    return res.render('changePassword', { title: 'Change Password', user: req.user, error: result.error, success: null });
+  }
+  
+  res.render('changePassword', { title: 'Change Password', user: req.user, error: null, success: 'Password changed successfully!' });
+});
+
 app.get('/my-recipes', (req, res) => {
   if (!req.user) return res.redirect('/login');
   const userRecipes = getUserRecipes(req.user.id);
+  const favoriteIds = db.prepare('SELECT recipe_id FROM favorites WHERE user_id = ?').all(req.user.id).map(f => f.recipe_id);
+  userRecipes.forEach(recipe => {
+    recipe.isFavorited = favoriteIds.includes(recipe.id);
+  });
   res.render('myRecipes', { title: 'My Recipes', userRecipes });
 });
 
@@ -130,8 +236,9 @@ app.get('/admin/users', (req, res) => {
   if (!req.user || req.user.username !== 'admin') {
     return res.redirect('/');
   }
-  const users = getAllUsers();
-  res.render('users', { title: 'User List', users });
+  const searchQuery = req.query.q || '';
+  const users = searchQuery ? searchUsers(searchQuery) : getAllUsers();
+  res.render('users', { title: 'User List', users, searchQuery });
 });
 
 app.get('/postconfirm', (req, res) => {
@@ -150,8 +257,11 @@ app.post('/admin/pending/:id/accept', (req, res) => {
 
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
+  if (recipe.pending !== 1) return res.redirect('/postconfirm');
 
+  const recipeOwner = recipe.user_id !== null ? recipe.user_id : 'seed';
   db.prepare('UPDATE recipes SET pending = 0, posted = 1 WHERE id = ?').run(id);
+  addRecipeHistory(id, recipe.name, 'accepted', req.user.id, `Accepted recipe from user_id: ${recipeOwner}`);
 
   res.redirect('/postconfirm');
 });
@@ -164,8 +274,11 @@ app.post('/admin/pending/:id/decline', (req, res) => {
 
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
+  if (recipe.pending !== 1) return res.redirect('/postconfirm');
 
+  const recipeOwner = recipe.user_id !== null ? recipe.user_id : 'seed';
   db.prepare('UPDATE recipes SET pending = 0 WHERE id = ?').run(id);
+  addRecipeHistory(id, recipe.name, 'declined', req.user.id, `Declined recipe from user_id: ${recipeOwner}`);
 
   res.redirect('/postconfirm');
 });
@@ -280,7 +393,7 @@ app.get('/add', (req, res) => {
 app.post('/add', (req, res) => {
   if (!req.user) return res.redirect('/login');
 
-  const { title, ingredients, instructions } = req.body;
+  const { title, ingredients, instructions, category, cooking_time, difficulty } = req.body;
 
   const newRecipe = {
     name: (title || '').trim(),
@@ -289,7 +402,10 @@ app.post('/add', (req, res) => {
       .map(s => s.trim())
       .filter(Boolean)
       .join(', '),
-    instructions: (instructions || '').trim()
+    instructions: (instructions || '').trim(),
+    category: (category || '').trim(),
+    cooking_time: parseInt(cooking_time) || 0,
+    difficulty: (difficulty || '').trim()
   };
 
   const created = addRecipe(newRecipe, req.user.id);
@@ -299,9 +415,27 @@ app.post('/add', (req, res) => {
 });
 
 app.get('/recipes', (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const search = req.query.search || '';
+  const sort = req.query.sort || 'id';
+  const category = req.query.category || '';
+  
+  const userId = req.user ? req.user.id : null;
+  const result = getAllRecipes(page, 12, search, sort, category, userId);
+  const categories = getCategories();
+  
   res.render('recipes', {
     title: 'Recipes',
-    recipes: getAllRecipes(),
+    recipes: result.recipes,
+    pagination: {
+      page: result.page,
+      totalPages: result.totalPages,
+      total: result.total
+    },
+    search,
+    sort,
+    category,
+    categories,
     isLoggedIn: !!req.user
   });
 });
@@ -311,11 +445,35 @@ app.get('/recipes/:id', (req, res) => {
   try { id = decodeURIComponent(id); } catch {}
 
   const recipe = getRecipe(id);
-  if (!recipe) return res.status(404).send('Recipe not found');
+  if (!recipe) {
+    return res.redirect('/recipes');
+  }
+
+  const isFav = req.user ? isFavorited(req.user.id, recipe.id) : false;
 
   res.render('recipe', {
     title: recipe.name,
-    recipe
+    recipe,
+    hidePostButton: req.query.fromHistory === '1',
+    backToList: req.query.back || null,
+    isFavorited: isFav
+  });
+});
+
+app.get('/recipes/:id/delete/confirm', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.redirect('/recipes');
+
+  res.render('confirmDelete', {
+    title: 'Confirm Delete',
+    recipe,
+    deleteUrl: `/recipes/${encodeURIComponent(id)}/delete`,
+    cancelUrl: '/recipes'
   });
 });
 
@@ -328,9 +486,21 @@ app.post('/recipes/:id/delete', (req, res) => {
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
 
+  const confirmText = `Delete ${recipe.name}`;
+  if ((req.body.confirm || '').trim() !== confirmText) {
+    console.log('Delete failed:', req.body.confirm, 'expected:', confirmText);
+    return res.redirect('/recipes');
+  }
+
+  if (recipe.user_id !== null && recipe.user_id !== req.user.id && req.user.username !== 'admin') {
+    return res.status(403).send('You can only delete your own recipes');
+  }
+
   if (recipe.user_id !== null) {
-    db.prepare('UPDATE recipes SET posted = 0, pending = 0 WHERE id = ?').run(id);
-  } else {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `User deleted their own recipe`);
+    deleteRecipeById(id);
+  } else if (req.user.username === 'admin') {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Deleted seed recipe`);
     deleteRecipeById(id);
   }
 
@@ -346,8 +516,52 @@ app.post('/my-recipes/:id/post', (req, res) => {
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
 
-  if (recipe.user_id === req.user.id) {
+  if (recipe.user_id === req.user.id && recipe.pending === 0) {
     db.prepare('UPDATE recipes SET pending = 1 WHERE id = ?').run(id);
+    res.redirect('/my-recipes');
+  } else {
+    res.redirect('/my-recipes');
+  }
+});
+
+app.get('/my-recipes/:id/delete/confirm', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.redirect('/my-recipes');
+
+  res.render('confirmDelete', {
+    title: 'Confirm Delete',
+    recipe,
+    deleteUrl: `/my-recipes/${encodeURIComponent(id)}/delete`,
+    cancelUrl: '/my-recipes'
+  });
+});
+
+app.post('/my-recipes/:id/delete', (req, res) => {
+  if (!req.user) return res.redirect('/login');
+
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.status(404).send('Recipe not found');
+
+  const confirmText = `Delete ${recipe.name}`;
+  if ((req.body.confirm || '').trim() !== confirmText) {
+    console.log('Delete failed:', req.body.confirm, 'expected:', confirmText);
+    return res.redirect('/my-recipes');
+  }
+
+  if (recipe.user_id !== null && recipe.user_id === req.user.id) {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `User deleted their own recipe`);
+    deleteRecipeById(id);
+  } else if (recipe.user_id === null && req.user.username === 'admin') {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Admin deleted seed recipe`);
+    deleteRecipeById(id);
   }
 
   res.redirect('/my-recipes');
@@ -371,7 +585,8 @@ app.get('/edit/:id', (req, res) => {
   res.render('edit', {
     title: `Edit: ${recipe.name}`,
     recipe,
-    cancelUrl
+    cancelUrl: '/my-recipes',
+    editAction: `/edit/${encodeURIComponent(id)}`
   });
 });
 
@@ -381,7 +596,7 @@ app.post('/edit/:id', (req, res) => {
   let id = req.params.id;
   try { id = decodeURIComponent(id); } catch {}
 
-  const { title, description, instructions } = req.body;
+  const { title, description, instructions, category, cooking_time, difficulty } = req.body;
 
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
@@ -390,14 +605,33 @@ app.post('/edit/:id', (req, res) => {
     return res.status(403).send('You can only edit your own recipes');
   }
 
-  db.prepare('UPDATE recipes SET name = ?, description = ?, instructions = ? WHERE id = ?').run(
-    (title || '').trim(),
-    (description || '').trim(),
-    (instructions || '').trim(),
-    id
+  const newTitle = (title || '').trim();
+  const newDesc = (description || '').trim();
+  const newInstr = (instructions || '').trim();
+  const newCategory = (category || '').trim();
+  const newCookingTime = parseInt(cooking_time) || 0;
+  const newDifficulty = (difficulty || '').trim();
+  
+  const changes = [];
+  if (newTitle !== recipe.name) changes.push(`name: "${recipe.name}" -> "${newTitle}"`);
+  if (newDesc !== recipe.description) changes.push('description changed');
+  if (newInstr !== recipe.instructions) changes.push('instructions changed');
+  if (newCategory !== (recipe.category || '')) changes.push('category changed');
+  if (newCookingTime !== (recipe.cooking_time || 0)) changes.push('cooking_time changed');
+  if (newDifficulty !== (recipe.difficulty || '')) changes.push('difficulty changed');
+  
+  const details = changes.length > 0 ? `Changed: ${changes.join(', ')}` : 'No changes made';
+
+  db.prepare('UPDATE recipes SET name = ?, description = ?, instructions = ?, category = ?, cooking_time = ?, difficulty = ? WHERE id = ?').run(
+    newTitle, newDesc, newInstr, newCategory, newCookingTime, newDifficulty, id
   );
 
-  res.redirect('/recipes');
+  if (changes.length > 0) {
+    addRecipeHistory(id, recipe.name, 'edited', req.user.id, details);
+    res.redirect('/my-recipes');
+  } else {
+    res.redirect('/my-recipes');
+  }
 });
 
 function isAdmin(req) {
@@ -416,7 +650,8 @@ app.get('/admin/recipes/:id/edit', (req, res) => {
   res.render('edit', {
     title: `Edit: ${recipe.name}`,
     recipe,
-    cancelUrl: '/recipes'
+    cancelUrl: '/recipes',
+    editAction: `/admin/recipes/${encodeURIComponent(id)}`
   });
 });
 
@@ -431,14 +666,47 @@ app.post('/admin/recipes/:id/edit', (req, res) => {
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
 
+  const newTitle = (title || '').trim();
+  const newDesc = (description || '').trim();
+  const newInstr = (instructions || '').trim();
+  
+  const changes = [];
+  if (newTitle !== recipe.name) changes.push(`name: "${recipe.name}" -> "${newTitle}"`);
+  if (newDesc !== recipe.description) changes.push('description changed');
+  if (newInstr !== recipe.instructions) changes.push('instructions changed');
+  
+  const details = changes.length > 0 ? `Changed: ${changes.join(', ')}` : 'No changes made';
+
   db.prepare('UPDATE recipes SET name = ?, description = ?, instructions = ? WHERE id = ?').run(
-    (title || '').trim(),
-    (description || '').trim(),
-    (instructions || '').trim(),
+    newTitle,
+    newDesc,
+    newInstr,
     id
   );
 
-  res.redirect('/recipes');
+  if (changes.length > 0) {
+    addRecipeHistory(id, recipe.name, 'edited', req.user.id, details);
+    res.redirect('/recipes');
+  } else {
+    res.redirect('/recipes');
+  }
+});
+
+app.get('/admin/recipes/:id/delete/confirm', (req, res) => {
+  if (!isAdmin(req)) return res.redirect('/');
+
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.redirect('/recipes');
+
+  res.render('confirmDelete', {
+    title: 'Confirm Delete',
+    recipe,
+    deleteUrl: `/admin/recipes/${encodeURIComponent(id)}/delete`,
+    cancelUrl: '/recipes'
+  });
 });
 
 app.post('/admin/recipes/:id/delete', (req, res) => {
@@ -448,9 +716,19 @@ app.post('/admin/recipes/:id/delete', (req, res) => {
   try { id = decodeURIComponent(id); } catch {}
 
   const recipe = getRecipeById(id);
+  if (!recipe) return res.status(404).send('Recipe not found');
+
+  const confirmText = `Delete ${recipe.name}`;
+  if ((req.body.confirm || '').trim() !== confirmText) {
+    console.log('Delete failed:', req.body.confirm, 'expected:', confirmText);
+    return res.redirect('/recipes');
+  }
+  
   if (recipe.user_id !== null) {
     db.prepare('UPDATE recipes SET posted = 0, pending = 0 WHERE id = ?').run(id);
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Deleted user's posted recipe (user_id: ${recipe.user_id})`);
   } else {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Deleted seed recipe`);
     deleteRecipeById(id);
   }
 
@@ -476,7 +754,8 @@ app.get('/admin/users/:userId/recipes/:id/edit', (req, res) => {
   res.render('edit', {
     title: `Edit: ${recipeToEdit.name}`,
     recipe: recipeToEdit,
-    cancelUrl: '/admin/users/' + req.params.userId + '/recipes'
+    cancelUrl: '/admin/users/' + req.params.userId + '/recipes',
+    editAction: `/admin/users/${req.params.userId}/recipes/${encodeURIComponent(id)}`
   });
 });
 
@@ -489,23 +768,50 @@ app.post('/admin/users/:userId/recipes/:id/edit', (req, res) => {
 
   const { title, description, instructions } = req.body;
 
-  const updatedRecipe = {
-    name: (title || '').trim(),
-    description: (description || '').trim(),
-    instructions: (instructions || '').trim()
-  };
+  const newTitle = (title || '').trim();
+  const newDesc = (description || '').trim();
+  const newInstr = (instructions || '').trim();
 
   const existing = getRecipeById(id);
   if (!existing) return res.status(404).send('Recipe not found');
 
+  const changes = [];
+  if (newTitle !== existing.name) changes.push(`name: "${existing.name}" -> "${newTitle}"`);
+  if (newDesc !== existing.description) changes.push('description changed');
+  if (newInstr !== existing.instructions) changes.push('instructions changed');
+  
+  const details = changes.length > 0 ? `Admin edited user's recipe (user_id: ${userId}), ${changes.join(', ')}` : 'No changes made';
+
   db.prepare('UPDATE recipes SET name = ?, description = ?, instructions = ? WHERE id = ?').run(
-    updatedRecipe.name,
-    updatedRecipe.description,
-    updatedRecipe.instructions,
+    newTitle,
+    newDesc,
+    newInstr,
     id
   );
 
-  res.redirect('/admin/users/' + req.params.userId + '/recipes');
+  if (changes.length > 0) {
+    addRecipeHistory(id, existing.name, 'edited', req.user.id, details);
+    res.redirect('/admin/users/' + req.params.userId + '/recipes');
+  } else {
+    res.redirect('/admin/users/' + req.params.userId + '/recipes');
+  }
+});
+
+app.get('/admin/users/:userId/recipes/:id/delete/confirm', (req, res) => {
+  if (!isAdmin(req)) return res.redirect('/');
+
+  let id = req.params.id;
+  try { id = decodeURIComponent(id); } catch {}
+
+  const recipe = getRecipeById(id);
+  if (!recipe) return res.redirect('/admin/users/' + req.params.userId + '/recipes');
+
+  res.render('confirmDelete', {
+    title: 'Confirm Delete',
+    recipe,
+    deleteUrl: `/admin/users/${req.params.userId}/recipes/${encodeURIComponent(id)}/delete`,
+    cancelUrl: '/admin/users/' + req.params.userId + '/recipes'
+  });
 });
 
 app.post('/admin/users/:userId/recipes/:id/delete', (req, res) => {
@@ -518,11 +824,30 @@ app.post('/admin/users/:userId/recipes/:id/delete', (req, res) => {
   const recipe = getRecipeById(id);
   if (!recipe) return res.status(404).send('Recipe not found');
 
+  const confirmText = `Delete ${recipe.name}`;
+  if ((req.body.confirm || '').trim() !== confirmText) {
+    console.log('Delete failed:', req.body.confirm, 'expected:', confirmText);
+    return res.redirect('/admin/users/' + req.params.userId + '/recipes');
+  }
+
   if (recipe.user_id !== null && recipe.user_id === userId) {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Admin deleted user's recipe (user_id: ${userId})`);
+    deleteRecipeById(id);
+  } else if (recipe.user_id === null) {
+    addRecipeHistory(id, recipe.name, 'deleted', req.user.id, `Admin deleted seed recipe`);
     deleteRecipeById(id);
   }
 
   res.redirect('/admin/users/' + req.params.userId + '/recipes');
+});
+
+app.post('/admin/reset-seed-recipes', (req, res) => {
+  if (!isAdmin(req)) return res.redirect('/');
+  
+  const count = resetSeedRecipes();
+  addRecipeHistory(null, 'Seed Recipes', 'reset', req.user.id, `Reset ${count} seed recipes`);
+  
+  res.redirect('/recipes');
 });
 
 ensureAdminUser();

@@ -7,16 +7,14 @@
     <% } else { %>
       <div class="recipe-list">
         <% userRecipes.forEach(function(recipe){ %>
-          <div class="card">
-            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+          <div class="card" <% if (recipe.isFavorited) { %>style="border: 2px solid #f0c000;"<% } %>>
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>?back=my-recipes"><%= recipe.name %></a></h3>
             <p><%= recipe.description %></p>
             <div class="card-buttons">
               <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="GET">
                 <button type="submit" class="btn btn-edit">Edit</button>
               </form>
-              <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
-                <button type="submit" class="btn delete">Delete</button>
-              </form>
+              <a class="btn delete" href="/my-recipes/<%= encodeURIComponent(recipe.id) %>/delete/confirm">Delete</a>
             </div>
           </div>
         <% }) %>
@@ -25,6 +23,7 @@
 
     <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
       <a class="btn" href="/add">Add Recipe</a>
+      <a class="btn secondary" href="/favorites">My Favorites</a>
       <a class="btn secondary" href="/recipes">Back to Recipes</a>
     </div>
   </div>

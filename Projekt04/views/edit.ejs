@@ -5,7 +5,7 @@
     </header>
 
     <main class="recipe-content">
-      <form action="/edit/<%= encodeURIComponent(recipe.id) %>" method="post" class="recipe-form">
+      <form action="<%= editAction || '/edit/' + encodeURIComponent(recipe.id) %>" method="post" class="recipe-form">
         
         <label>
           Title
@@ -20,6 +20,38 @@
         <label>
           Instructions
           <textarea name="instructions" rows="8" class="form-textarea"><%= recipe.instructions %></textarea>
+        </label>
+
+        <label>
+          Category
+          <select name="category" class="form-input">
+            <option value="">Select category...</option>
+            <option value="Breakfast" <%= recipe.category === 'Breakfast' ? 'selected' : '' %>>Breakfast</option>
+            <option value="Lunch" <%= recipe.category === 'Lunch' ? 'selected' : '' %>>Lunch</option>
+            <option value="Dinner" <%= recipe.category === 'Dinner' ? 'selected' : '' %>>Dinner</option>
+            <option value="Dessert" <%= recipe.category === 'Dessert' ? 'selected' : '' %>>Dessert</option>
+            <option value="Snack" <%= recipe.category === 'Snack' ? 'selected' : '' %>>Snack</option>
+            <option value="Beverage" <%= recipe.category === 'Beverage' ? 'selected' : '' %>>Beverage</option>
+            <option value="Soup" <%= recipe.category === 'Soup' ? 'selected' : '' %>>Soup</option>
+            <option value="Salad" <%= recipe.category === 'Salad' ? 'selected' : '' %>>Salad</option>
+            <option value="Appetizer" <%= recipe.category === 'Appetizer' ? 'selected' : '' %>>Appetizer</option>
+            <option value="Side Dish" <%= recipe.category === 'Side Dish' ? 'selected' : '' %>>Side Dish</option>
+          </select>
+        </label>
+
+        <label>
+          Cooking Time (minutes)
+          <input name="cooking_time" type="number" min="0" class="form-input" value="<%= recipe.cooking_time || '' %>"/>
+        </label>
+
+        <label>
+          Difficulty
+          <select name="difficulty" class="form-input">
+            <option value="">Select difficulty...</option>
+            <option value="Easy" <%= recipe.difficulty === 'Easy' ? 'selected' : '' %>>Easy</option>
+            <option value="Medium" <%= recipe.difficulty === 'Medium' ? 'selected' : '' %>>Medium</option>
+            <option value="Hard" <%= recipe.difficulty === 'Hard' ? 'selected' : '' %>>Hard</option>
+          </select>
         </label>
 
         <div class="form-buttons">

@@ -1,0 +1,41 @@
+<%- include('head.ejs') %>
+  <div class="container">
+    <h1><%= title %></h1>
+
+    <div class="card" style="max-width: 500px; margin: 0 auto 2rem;">
+      <h3>👤 <%= user.username %></h3>
+      <p><strong>Member since:</strong> <%= createdAt ? new Date(createdAt).toLocaleDateString() : 'Unknown' %></p>
+      <p><strong>Posted recipes:</strong> <%= postedCount %></p>
+      <p><strong>Total recipes:</strong> <%= userRecipes ? userRecipes.length : 0 %></p>
+      <p><strong>Favorites:</strong> <%= favorites ? favorites.length : 0 %></p>
+    </div>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; flex-wrap: wrap;">
+      <a class="btn" href="/my-recipes">My Recipes</a>
+      <a class="btn secondary" href="/favorites">My Favorites</a>
+      <a class="btn secondary" href="/change-password">Change Password</a>
+      <% if (user.username !== 'admin') { %>
+        <a class="btn delete" href="/delete-account">Delete Account</a>
+      <% } %>
+    </div>
+
+    <% if (userRecipes && userRecipes.length > 0) { %>
+      <h2 style="text-align: center; margin-top: 2rem;">Your Recent Recipes</h2>
+      <div class="recipe-list">
+        <% userRecipes.slice(0, 3).forEach(function(recipe){ %>
+          <div class="card">
+            <h3><a href="/recipes/<%= encodeURIComponent(recipe.id) %>"><%= recipe.name %></a></h3>
+            <p><%= recipe.description %></p>
+          </div>
+        <% }) %>
+      </div>
+      <% if (userRecipes.length > 3) { %>
+        <p style="text-align: center;"><a href="/my-recipes">View all <%= userRecipes.length %> recipes →</a></p>
+      <% } %>
+    <% } %>
+
+    <div class="form-buttons" style="justify-content: center; gap: 1rem; margin-top: 2rem;">
+      <a class="btn secondary" href="/">Back to Home</a>
+    </div>
+  </div>
+<%- include('footer') %>

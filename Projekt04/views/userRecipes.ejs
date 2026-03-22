@@ -15,9 +15,7 @@
                 <form action="/admin/users/<%= user.id %>/recipes/<%= encodeURIComponent(recipe.id) %>/edit" method="GET">
                   <button type="submit" class="btn btn-edit">Edit</button>
                 </form>
-                <form action="/admin/users/<%= user.id %>/recipes/<%= encodeURIComponent(recipe.id) %>/delete" method="POST">
-                  <button type="submit" class="btn delete">Delete</button>
-                </form>
+                <a class="btn delete" href="/admin/users/<%= user.id %>/recipes/<%= encodeURIComponent(recipe.id) %>/delete/confirm">Delete</a>
               </div>
             <% } %>
           </div>

@@ -3,14 +3,45 @@
     <div class="recipe-content" style="text-align: center;">
       <h1><%= recipe.name %></h1>
       <p class="recipe-meta"><%= recipe.description %></p>
+      
+      <% if (recipe.category || recipe.cooking_time || recipe.difficulty) { %>
+        <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1rem;">
+          <% if (recipe.category) { %><strong>Category:</strong> <%= recipe.category %><% } %>
+          <% if (recipe.cooking_time) { %> | <strong>Time:</strong> <%= recipe.cooking_time %> min<% } %>
+          <% if (recipe.difficulty) { %> | <strong>Difficulty:</strong> <%= recipe.difficulty %><% } %>
+        </p>
+      <% } %>
+      
       <h2>Instructions</h2>
       <p><%= recipe.instructions %></p>
+      
       <div class="form-buttons" style="justify-content: center; margin-top: 1.5rem; gap: 1rem;">
-        <a class="btn" href="/postconfirm">Back to list</a>
-        <% if (user && recipe.user_id === user.id) { %>
-          <form action="/my-recipes/<%= encodeURIComponent(recipe.id) %>/post" method="POST" style="display: inline;">
-            <button type="submit" class="btn">Post Recipe</button>
+        <% if (backToList === 'my-recipes') { %>
+          <a class="btn" href="/my-recipes">Back to list</a>
+        <% } else if (hidePostButton) { %>
+          <a class="btn" href="/userhistory">Back to list</a>
+        <% } else { %>
+          <a class="btn" href="/recipes">Back to list</a>
+        <% } %>
+        
+        <% if (user) { %>
+          <form action="/recipes/<%= encodeURIComponent(recipe.id) %>/favorite" method="POST" style="display: inline;">
+            <button type="submit" class="btn <%= isFavorited ? 'secondary' : '' %>">
+              <%= isFavorited ? '❤️ Remove from Favorites' : '🤍 Add to Favorites' %>
+            </button>
           </form>
+        <% } %>
+        
+        <% if (user && recipe.user_id === user.id && !hidePostButton) { %>
+          <% if (recipe.pending === 1) { %>
+            <span style="color: var(--text-muted);">Pending...</span>
+          <% } else if (recipe.posted === 1) { %>
+            <span style="color: var(--text-muted);">Posted</span>
+          <% } else { %>
+            <form action="/my-recipes/<%= encodeURIComponent(recipe.id) %>/post" method="POST" style="display: inline;">
+              <button type="submit" class="btn">Post Recipe</button>
+            </form>
+          <% } %>
         <% } %>
       </div>
     </div>

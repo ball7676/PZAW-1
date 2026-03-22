@@ -17,6 +17,11 @@
         <img id="confirm-icon" src="/iconfiles/adminconfirm.png" alt="Post Confirm" width="28" height="28" />
       </a>
     <% } %>
+    <% if (user) { %>
+    <a href="/userhistory" class="nav-btn" aria-label="History">
+      <img id="history-icon" src="/iconfiles/history.png" alt="History" width="28" height="28" />
+    </a>
+    <% } %>
     <a href="/account" class="nav-btn" aria-label="Account">
       <img id="nav-icon" src="/iconfiles/account.png" alt="Account" width="28" height="28" />
     </a>

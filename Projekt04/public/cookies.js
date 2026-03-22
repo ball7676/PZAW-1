@@ -25,6 +25,10 @@
     if (navIcon) {
       navIcon.src = '/iconfiles/account' + (theme === 'dark' ? 'W' : '') + '.png';
     }
+    var historyIcon = document.getElementById('history-icon');
+    if (historyIcon) {
+      historyIcon.src = '/iconfiles/history' + (theme === 'dark' ? 'W' : '') + '.png';
+    }
     if (listIcon) {
       listIcon.src = '/iconfiles/list' + (theme === 'dark' ? 'W' : '') + '.png';
     }
