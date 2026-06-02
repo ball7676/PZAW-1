@@ -1,22 +1,34 @@
 # Projekt04 - CookBook
 
-## Działanie
+## Uruchamianie
 
-Wystarczy wpisać kolejno:
-npm install
-node index.js
+1. Otwórz terminal w katalogu 'Projekt04'
+2. Uruchom:
+   - 'npm install'
+   - 'node index.js'
+3. Otwórz w przeglądarce: 'http://localhost:8000'
 
-Funkcjonalność strony:
-Możliwość oglądania, edytowania i usuwania przepisów.
-Możliwość opublikowania własnych przepisów jest monitorowana przez konto admin, które musi zaakceptować przepis w odpowiednim menu.
-Możliwość zmiany motywu strony na ciemny bądż jasny.
-Przechowywanie danych w bazie danych.
-Ustawienia i zalogowanie do konta jest zapamiętywane przez cookies.
-Możliwość obejrzenia historii swoich przepisów (edycje, usuwanie, udostępnianie)
-Możliwość obejrzenia listy użytkowników, ich przepisów i id przez admina.
-Możliwość polubienia przepisów.
-Możliwość zmiany hasła.
-By zalogować się na konto admin trzeba podać takie dane:
-nazwa: admin, hasło: admin123
+## Opis aplikacji
 
-Serwer działa na localhost:8000
+Aplikacja to prosty serwis kulinarny z kontami użytkowników i administracją.
+
+## Główne funkcje
+
+- Przeglądanie listy przepisów
+- Dodawanie własnych przepisów przez zalogowanych użytkowników
+- Moderacja nowych przepisów przez administratora
+- Edycja i usuwanie własnych przepisów
+- Lubię to / ulubione przepisy
+- Historia działań na przepisach
+- Zmiana hasła i usuwanie konta
+- Tryb jasny / ciemny
+
+## Konto administratora
+
+- login: 'admin'
+- hasło: 'admin123'
+
+## Uwagi
+
+- Nowe przepisy muszą zostać zaakceptowane przez administratora, zanim będą widoczne publicznie.
+- Sesje są zapisywane w ciasteczkach.

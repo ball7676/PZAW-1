@@ -250,7 +250,9 @@ export function updateRecipeFull(id, payload) {
 }
 
 export function getCategories() {
-  const rows = db.prepare("SELECT DISTINCT category FROM recipes WHERE category IS NOT NULL AND category != '' ORDER BY category").all();
+  const rows = db.prepare(
+    "SELECT DISTINCT category FROM recipes WHERE category IS NOT NULL AND category != '' AND (user_id IS NULL OR posted = 1) ORDER BY category"
+  ).all();
   return rows.map(r => r.category);
 }
 

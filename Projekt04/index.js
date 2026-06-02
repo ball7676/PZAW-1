@@ -7,8 +7,6 @@ import {
   verifyUser,
   getUserById,
   getUser,
-  generateSalt,
-  hashPassword,
   getAllUsers,
   searchUsers,
   deleteUser,
@@ -42,17 +40,12 @@ import {
 
 const db = new Database(path.join(process.cwd(), 'database', 'recipes.db'));
 
-function ensureAdminUser() {
+async function ensureAdminUser() {
   const existing = db.prepare('SELECT id FROM users WHERE LOWER(username) = LOWER(?)').get('admin');
   if (!existing) {
-    const salt = generateSalt();
-    const hashedPassword = hashPassword('admin123', salt);
-    db.prepare('INSERT INTO users (username, password, salt) VALUES (?, ?, ?)').run(
-      'admin',
-      hashedPassword,
-      salt
-    );
-    console.log('Admin user created');
+    const result = await createUser('admin', 'admin123');
+    if (result.success) console.log('Admin user created');
+    else console.error('Failed to create admin user:', result.error);
   }
 }
 
@@ -201,7 +194,7 @@ app.get('/change-password', (req, res) => {
   res.render('changePassword', { title: 'Change Password', user: req.user, error: null, success: null });
 });
 
-app.post('/change-password', (req, res) => {
+app.post('/change-password', async (req, res) => {
   if (!req.user) return res.redirect('/login');
   
   const { oldPassword, newPassword, confirmPassword } = req.body;
@@ -214,7 +207,7 @@ app.post('/change-password', (req, res) => {
     return res.render('changePassword', { title: 'Change Password', user: req.user, error: 'New passwords do not match', success: null });
   }
   
-  const result = updatePassword(req.user.id, oldPassword, newPassword);
+  const result = await updatePassword(req.user.id, oldPassword, newPassword);
   if (!result.success) {
     return res.render('changePassword', { title: 'Change Password', user: req.user, error: result.error, success: null });
   }
@@ -307,7 +300,7 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Register' });
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -318,7 +311,7 @@ app.post('/register', (req, res) => {
     return res.render('register', { title: 'Register', error: 'Password must be at least 4 characters' });
   }
 
-  const result = createUser(username, password);
+  const result = await createUser(username, password);
   if (!result.success) {
     return res.render('register', { title: 'Register', error: result.error });
   }
@@ -333,14 +326,14 @@ app.get('/login', (req, res) => {
   res.render('login', { title: 'Login' });
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
     return res.render('login', { title: 'Login', error: 'Username and password are required' });
   }
 
-  const user = verifyUser(username, password);
+  const user = await verifyUser(username, password);
   if (!user) {
     return res.render('login', { title: 'Login', error: 'Invalid username or password' });
   }
@@ -366,7 +359,7 @@ app.get('/delete-account', (req, res) => {
   res.render('deleteAccount', { title: 'Delete Account', error: null });
 });
 
-app.post('/delete-account', (req, res) => {
+app.post('/delete-account', async (req, res) => {
   if (!req.user) return res.redirect('/login');
   if (req.user.username === 'admin') return res.redirect('/account');
 
@@ -376,7 +369,7 @@ app.post('/delete-account', (req, res) => {
     return res.render('deleteAccount', { title: 'Delete Account', error: 'Username does not match' });
   }
 
-  const result = deleteUser(req.user.id, username, password);
+  const result = await deleteUser(req.user.id, username, password);
   if (!result.success) {
     return res.render('deleteAccount', { title: 'Delete Account', error: result.error });
   }
@@ -410,7 +403,6 @@ app.post('/add', (req, res) => {
 
   const created = addRecipe(newRecipe, req.user.id);
   if (!created) return res.redirect('/?error=1');
-
   res.redirect('/my-recipes');
 });
 
@@ -517,7 +509,13 @@ app.post('/my-recipes/:id/post', (req, res) => {
   if (!recipe) return res.status(404).send('Recipe not found');
 
   if (recipe.user_id === req.user.id && recipe.pending === 0) {
-    db.prepare('UPDATE recipes SET pending = 1 WHERE id = ?').run(id);
+    if (req.user && req.user.username === 'admin') {
+      // Admin's own recipes are posted immediately
+      db.prepare('UPDATE recipes SET pending = 0, posted = 1 WHERE id = ?').run(id);
+      addRecipeHistory(id, recipe.name, 'accepted', req.user.id, `Admin posted their own recipe`);
+    } else {
+      db.prepare('UPDATE recipes SET pending = 1 WHERE id = ?').run(id);
+    }
     res.redirect('/my-recipes');
   } else {
     res.redirect('/my-recipes');
@@ -651,7 +649,7 @@ app.get('/admin/recipes/:id/edit', (req, res) => {
     title: `Edit: ${recipe.name}`,
     recipe,
     cancelUrl: '/recipes',
-    editAction: `/admin/recipes/${encodeURIComponent(id)}`
+    editAction: `/admin/recipes/${encodeURIComponent(id)}/edit`
   });
 });
 
@@ -755,7 +753,7 @@ app.get('/admin/users/:userId/recipes/:id/edit', (req, res) => {
     title: `Edit: ${recipeToEdit.name}`,
     recipe: recipeToEdit,
     cancelUrl: '/admin/users/' + req.params.userId + '/recipes',
-    editAction: `/admin/users/${req.params.userId}/recipes/${encodeURIComponent(id)}`
+    editAction: `/admin/users/${req.params.userId}/recipes/${encodeURIComponent(id)}/edit`
   });
 });
 
@@ -850,8 +848,11 @@ app.post('/admin/reset-seed-recipes', (req, res) => {
   res.redirect('/recipes');
 });
 
-ensureAdminUser();
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+ensureAdminUser().then(() => {
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}).catch(err => {
+  console.error('Failed to ensure admin user:', err);
+  process.exit(1);
 });

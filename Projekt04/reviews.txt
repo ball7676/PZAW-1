@@ -1,0 +1,26 @@
+Review 1 (Oliwia):
++ Projekt ma w pełni działające i dobrze przygotowane README, dobrze opisuje uruchomienie aplikacji i jej funkcjonalności,
++ Bardzo ładne UI, tryb ciemny i jasny,
++ Dobry system moderacji postów,
++ Kod jest przejrzysty, dobrze zorganizowany, podzielony na widoki, skrypty, modele itp.,
+
+- W wyszukiwarce dodaje się kategoria z przepisami, które nie są jeszcze zaakceptowane przez admina (pusta kategoria),
+- po edytowaniu opisu i wciśnięciu Save changes jako admin wyskakuje biała strona z Cannot POST /admin/recipes/1, pojawia się to zarówno przy wbudowanych przepisach jak i dodanych przez użytkownika
+
+Review 2 (Gabrysia):
+1) poprawne, ale mało czytelne readme(to samo można opisać krócej)
+2) przy zmienianiu karty np. przechodzisz do strony account z strony głównej, przy ciemnym motywie pojawia się białe mignięcie przez co nie da się komfortowo korzystać z ciemnej wersji strony
+3) kafelki na stronie głównej mimo, że zdają się być interaktywne, to takie nie są(mogłyby przenosić do odpowiadającym im stron)
+4) aplikacja logicznie podzielona na mniejsze pliki, kod czytelny
+5) przy edycji przepisu użytkownika jako administrator wyskakuje błąd "Cannot POST /admin/users/2/recipes/9"
+6) w menu brakuje przycisku aby szybko przejść na stronę z przepisami z każdego miesjca na stronie
+7) administrator musi zatwierdzić własne przepisy
+8) w niektórych miejscach przyciski są nierówne (np. edit i delete przy własnych przepisach)
+
+Ocena od pana:
+- Aplikacja bardzo przyjemna w użyciu. W UX się w zasadzie wszystko zgadza
+- Nie znalazłem możliwości akceptacji przepisu tak, żeby się znalazł na stronie głównej
+- Historia jest współdzielona między użytkownikami, chyba nie tak to powinno działać?
+- Baza danych nie powinna się znaleźć w repozytorium, jeżeli chcesz mieć jakieś dane testowe, to powinno być do tego jakieś osobne narzedzie
+- sha256 to nie jest dobry algorytm do haszowania haseł, to jest niestety błąd w sztuce
+- Bardzo doceniam zaimplementowanie wyszukiwania przepisów!
